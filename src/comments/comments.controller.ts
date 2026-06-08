@@ -1,8 +1,8 @@
-import { UsersService } from './../users/users.service';
+import { UsersService } from '../users/users.service';
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, ParseIntPipe, Put, Query } from '@nestjs/common';
-import { ReviewsService } from './reviews.service';
-import { CreateReviewDto } from './dto/create-review.dto';
-import { UpdateReviewDto } from './dto/update-review.dto';
+import { ReviewsService } from './comments.service';
+import { CreateReviewDto } from './dto/create-comment.dto';
+import { UpdateReviewDto } from './dto/update-comment.dto';
 import { Roles } from '../users/decorators/user-role.decorator';
 import { AuthRoleGuard } from '../users/guards/auth-role.guard';
 import { UserType } from '../utils/enums';

@@ -1,18 +1,18 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, ParseIntPipe, Put, Query } from '@nestjs/common';
-import { ProductsService } from './products.service';
-import { CreateProductDto } from './dto/create-product.dto';
-import { UpdateProductDto } from './dto/update-product.dto';
+import { ProductsService } from './blogs.service';
+import { CreateProductDto } from './dto/create-blog.dto';
+import { UpdateProductDto } from './dto/update-blog.dto';
 import { AuthRoleGuard } from '../users/guards/auth-role.guard';
 import { Roles } from '../users/decorators/user-role.decorator';
 import { UserType } from '../utils/enums';
 import { CurrentUser } from '../users/decorators/current-user.decorator';
 import type { JwtPayloadType } from '../utils/types';
 
-@Controller('products')
+@Controller('blogs')
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) { }
 
-  @Post("create-product")
+  @Post("create-blog")
   @UseGuards(AuthRoleGuard)
   @Roles(UserType.ADMIN)
   create(@Body() createProductDto: CreateProductDto, @CurrentUser() payload: JwtPayloadType) {
@@ -47,6 +47,6 @@ export class ProductsController {
   @Roles(UserType.ADMIN)
   remove(@Param('id', ParseIntPipe) id: number) {
     this.productsService.remove(id);
-    return `This product with ID ${id} has been removed.`;
+    return `This blog with ID ${id} has been removed.`;
   }
 }

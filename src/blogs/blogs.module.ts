@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
-import { ProductsService } from './products.service';
-import { ProductsController } from './products.controller';
-import { Product } from './entities/product.entity';
+import { ProductsService } from './blogs.service';
+import { ProductsController } from './blogs.controller';
+import { Product } from './entities/blog.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from '../users/users.module';
 import { JwtModule } from '@nestjs/jwt';
@@ -12,4 +12,4 @@ import { JwtModule } from '@nestjs/jwt';
   providers: [ProductsService],
   exports: [ProductsService],
 })
-export class ProductsModule { }
+export class BlogsModule { }

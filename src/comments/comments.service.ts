@@ -1,9 +1,9 @@
-import { UsersService } from './../users/users.service';
+import { UsersService } from '../users/users.service';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateReviewDto } from './dto/create-review.dto';
-import { UpdateReviewDto } from './dto/update-review.dto';
-import { ProductsService } from '../products/products.service';
-import { Review } from './entities/review.entity';
+import { CreateReviewDto } from './dto/create-comment.dto';
+import { UpdateReviewDto } from './dto/update-comment.dto';
+import { ProductsService } from '../blogs/blogs.service';
+import { Review } from './entities/comment.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import type { JwtPayloadType } from '../utils/types';

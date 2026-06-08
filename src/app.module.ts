@@ -2,21 +2,39 @@ import { ClassSerializerInterceptor, MiddlewareConsumer, Module, NestModule, Req
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
-import { ProductsModule } from './products/products.module';
-import { ReviewsModule } from './reviews/reviews.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Product } from './products/entities/product.entity';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { Review } from './reviews/entities/review.entity';
-import { User } from './users/entities/user.entity';
 import { UploadsModule } from './uploads/uploads.module';
 import { LoggerMiddleware } from './utils/middlewares/logger.middleware';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { dataSourceOptions } from '../db/data-source';
+import { AcceptLanguageResolver, HeaderResolver, I18nModule, QueryResolver } from 'nestjs-i18n';
+import * as path from 'path';
+import { CommentsModule } from './comments/comments.module';
+import { BlogsModule } from './blogs/blogs.module';
 
 @Module({
-  imports: [UsersModule, ProductsModule, ReviewsModule, UploadsModule,
+  imports: [UsersModule, BlogsModule, CommentsModule, UploadsModule,
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: process.env.NODE_ENV !== "production" ? `.env.${process.env.NODE_ENV || 'development'}` : `.env`,
+    }),
+    I18nModule.forRootAsync({
+      useFactory: (configService: ConfigService) => ({
+        fallbackLanguage: configService.get('FALLBACK_LANGUAGE', 'en'),
+        loaderOptions: {
+          path: path.join(process.cwd(), 'src/i18n/'),
+          watch: true,
+        },
+      }),
+      resolvers: [
+        { use: QueryResolver, options: ['lang'] },
+        AcceptLanguageResolver,
+        new HeaderResolver(['x-lang']),
+      ],
+      inject: [ConfigService],
+    }),
     ThrottlerModule.forRoot({
       throttlers: [
         {
@@ -25,10 +43,7 @@ import { dataSourceOptions } from '../db/data-source';
         },
       ],
     }),
-    ConfigModule.forRoot({
-      isGlobal: true,
-      envFilePath: process.env.NODE_ENV !== "production" ? `.env.${process.env.NODE_ENV || 'development'}` : `.env`,
-    }),
+
     TypeOrmModule.forRoot(dataSourceOptions)
   ],
   controllers: [AppController],

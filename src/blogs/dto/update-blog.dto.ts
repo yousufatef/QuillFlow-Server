@@ -1,5 +1,5 @@
 import { PartialType } from '@nestjs/mapped-types';
-import { CreateProductDto } from './create-product.dto';
+import { CreateProductDto } from './create-blog.dto';
 import { Min, IsNotEmpty, IsNumber, IsString, Length } from 'class-validator';
 
 export class UpdateProductDto extends PartialType(CreateProductDto) {

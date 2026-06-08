@@ -1,27 +1,29 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ValidationPipe } from '@nestjs/common';
 import helmet from 'helmet';
+import { I18nValidationExceptionFilter, I18nValidationPipe } from 'nestjs-i18n';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // Global validation pipe configuration
-  app.useGlobalPipes(new ValidationPipe({
+  app.useGlobalPipes(new I18nValidationPipe({
     whitelist: true,
     forbidNonWhitelisted: true,
     transform: true,
   }));
 
-  // Security middleware
+  app.useGlobalFilters(
+    new I18nValidationExceptionFilter({
+      detailedErrors: false, // ← set true only for debugging
+    })
+  );
+
   app.use(helmet());
 
-  // CORS policy configuration
   app.enableCors({
     origin: ["http://localhost:3000", "http://localhost:5173"],
   });
 
-  // Start the server
   await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();

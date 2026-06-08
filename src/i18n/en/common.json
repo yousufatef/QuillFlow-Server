@@ -1,0 +1,41 @@
+{
+  "common": {
+    "success": "Operation completed successfully",
+    "error": "An error occurred",
+    "created": "Resource created successfully",
+    "updated": "Resource updated successfully",
+    "deleted": "Resource deleted successfully",
+    "notFound": "Resource not found",
+    "unauthorized": "You are not authorized to perform this action",
+    "forbidden": "Access forbidden"
+  },
+  "products": {
+    "created": "Product created successfully",
+    "updated": "Product updated successfully",
+    "deleted": "Product deleted successfully",
+    "notFound": "Product not found",
+    "listSuccess": "Products retrieved successfully"
+  },
+  "reviews": {
+    "created": "Review created successfully",
+    "updated": "Review updated successfully",
+    "deleted": "Review deleted successfully",
+    "notFound": "Review not found",
+    "listSuccess": "Reviews retrieved successfully"
+  },
+  "users": {
+    "registered": "User registered successfully",
+    "loginSuccess": "Login successful",
+    "loginFailed": "Invalid email or password",
+    "userNotFound": "User not found",
+    "updated": "User updated successfully",
+    "emailAlreadyExists": "Email already exists",
+    "profileFetched": "User profile fetched successfully"
+  },
+  "auth": {
+    "tokenExpired": "Token has expired",
+    "invalidToken": "Invalid token",
+    "noToken": "No token provided",
+    "accessDenied": "Access denied"
+  }
+}

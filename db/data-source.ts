@@ -1,6 +1,6 @@
 import { DataSource, DataSourceOptions } from "typeorm";
 import { User } from "../src/users/entities/user.entity";
-import { Product } from "../src/products/entities/product.entity";
+import { Product } from "../src/blogs/entities/blog.entity";
 import { Review } from "../src/reviews/entities/review.entity";
 import { config } from "dotenv";
 

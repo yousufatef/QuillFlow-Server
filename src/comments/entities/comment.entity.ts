@@ -1,6 +1,6 @@
 import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { CURRENT_TIMESTAMP } from "../../utils/constants";
-import { Product } from "../../products/entities/product.entity";
+import { Product } from "../../blogs/entities/blog.entity";
 import { User } from "../../users/entities/user.entity";
 
 
@@ -22,8 +22,6 @@ export class Review {
     updated_at!: Date;
 
 
-    @ManyToOne(() => Product, (product) => product.reviews, { onDelete: 'CASCADE' })
-    product!: Product;
 
     @ManyToOne(() => User, (user) => user.reviews, { eager: true, onDelete: 'CASCADE' })
     user!: User;
