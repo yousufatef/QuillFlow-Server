@@ -19,9 +19,16 @@ import { User } from './users/entities/user.entity';
 import { Comment } from './comments/entities/comment.entity';
 import { CategoriesModule } from './categories/categories.module';
 import { Category } from './categories/entities/category.entity';
+import { RolesModule } from './roles/roles.module';
+import { PermissionsModule } from './permissions/permissions.module';
+import { Role } from './roles/entities/role.entity';
+import { Permission } from './permissions/entities/permission.entity';
+import { RolePermission } from './roles/entities/role-permission.entity';
 
 @Module({
-  imports: [UsersModule, AuthModule, BlogsModule, CommentsModule, CategoriesModule, UploadsModule,
+  imports: [UsersModule, AuthModule, BlogsModule,
+    CommentsModule, RolesModule, PermissionsModule, RolePermission,
+    CategoriesModule, UploadsModule,
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: process.env.NODE_ENV !== "production" ? `.env.${process.env.NODE_ENV || 'development'}` : `.env`,
@@ -61,12 +68,14 @@ import { Category } from './categories/entities/category.entity';
           username: config.get<string>('DB_USERNAME'),
           password: config.get<string>('DB_PASSWORD'),
           database: config.get<string>('DB_DATABASE'),
-          entities: [Blog, User, Comment, Category],
+          entities: [Blog, User, Comment, Category, Role, Permission, RolePermission],
           synchronize: process.env.NODE_ENV !== 'production',
         }
       }
     }),
     CategoriesModule,
+    RolesModule,
+    PermissionsModule,
   ],
   controllers: [AppController],
   providers: [AppService, {

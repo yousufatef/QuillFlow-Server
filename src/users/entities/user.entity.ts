@@ -1,9 +1,10 @@
-import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { CURRENT_TIMESTAMP } from "../../utils/constants";
 import { Blog } from "../../blogs/entities/blog.entity";
 import { Comment } from "../../comments/entities/comment.entity";
 import { UserType } from "../../utils/enums";
 import { Exclude } from "class-transformer";
+import { Role } from "../../roles/entities/role.entity";
 
 @Entity({ name: 'users' })
 export class User {
@@ -28,6 +29,14 @@ export class User {
 
     @Column({ default: null, nullable: true })
     profileImage!: string;
+
+    // --- Role ---
+    @Column({ nullable: true })
+    roleId!: number | null;
+
+    @ManyToOne(() => Role, { nullable: true, eager: false, onDelete: 'SET NULL' })
+    @JoinColumn({ name: 'roleId' })
+    role!: Role | null;
 
     @CreateDateColumn({ type: 'timestamp', default: () => CURRENT_TIMESTAMP })
     created_at!: Date;
