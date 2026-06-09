@@ -1,10 +1,9 @@
 import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { CURRENT_TIMESTAMP } from "../../utils/constants";
-import { Product } from "../../blogs/entities/blog.entity";
-import { Review } from "../../reviews/entities/review.entity";
+import { Blog } from "../../blogs/entities/blog.entity";
+import { Comment } from "../../comments/entities/comment.entity";
 import { UserType } from "../../utils/enums";
 import { Exclude } from "class-transformer";
-
 
 @Entity({ name: 'users' })
 export class User {
@@ -27,6 +26,8 @@ export class User {
     @Column({ default: false })
     isAccountVerified!: boolean;
 
+    @Column({ default: null, nullable: true })
+    profileImage!: string;
 
     @CreateDateColumn({ type: 'timestamp', default: () => CURRENT_TIMESTAMP })
     created_at!: Date;
@@ -34,12 +35,10 @@ export class User {
     @UpdateDateColumn({ type: 'timestamp', default: () => CURRENT_TIMESTAMP, onUpdate: CURRENT_TIMESTAMP })
     updated_at!: Date;
 
-    @Column({ default: null, nullable: true })
-    profileImage!: string;
+    // --- Relations ---
+    @OneToMany(() => Blog, (blog) => blog.user)
+    blogs!: Blog[];
 
-    @OneToMany(() => Review, (review) => review.user)
-    reviews!: Review[];
-
-    @OneToMany(() => Product, (product) => product.user)
-    products!: Product[];
+    @OneToMany(() => Comment, (comment) => comment.user)
+    comments!: Comment[];
 }

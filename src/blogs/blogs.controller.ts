@@ -1,5 +1,5 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, ParseIntPipe, Put, Query } from '@nestjs/common';
-import { ProductsService } from './blogs.service';
+import { BlogsService } from './blogs.service';
 import { CreateProductDto } from './dto/create-blog.dto';
 import { UpdateProductDto } from './dto/update-blog.dto';
 import { AuthRoleGuard } from '../users/guards/auth-role.guard';
@@ -10,7 +10,7 @@ import type { JwtPayloadType } from '../utils/types';
 
 @Controller('blogs')
 export class ProductsController {
-  constructor(private readonly productsService: ProductsService) { }
+  constructor(private readonly productsService: BlogsService) { }
 
   @Post("create-blog")
   @UseGuards(AuthRoleGuard)

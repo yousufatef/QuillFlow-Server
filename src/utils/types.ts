@@ -1,9 +1,14 @@
 import { UserType } from "./enums";
 
+export type authTokensType = {
+    accessToken: string;
+    refreshToken: string;
+};
+
 export type JwtPayloadType = {
     id: number;
     userType: string;
-}
+};
 export type accessTokenType = {
     accessToken: string;
 }
@@ -15,5 +20,5 @@ export interface UserProfile {
     created_at: Date;
     updated_at: Date;
     isAccountVerified: boolean;
-    profileImage: string ;
+    profileImage: string;
 }

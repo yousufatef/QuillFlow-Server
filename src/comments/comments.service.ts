@@ -2,51 +2,51 @@ import { UsersService } from '../users/users.service';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateReviewDto } from './dto/create-comment.dto';
 import { UpdateReviewDto } from './dto/update-comment.dto';
-import { ProductsService } from '../blogs/blogs.service';
-import { Review } from './entities/comment.entity';
+import { BlogsService } from '../blogs/blogs.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import type { JwtPayloadType } from '../utils/types';
 import { UserType } from '../utils/enums';
+import { Comment } from './entities/comment.entity';
 
 @Injectable()
-export class ReviewsService {
+export class CommentsService {
 
   constructor(
-    @InjectRepository(Review)
-    private readonly reviewsRepository: Repository<Review>,
+    @InjectRepository(Comment)
+    private readonly commentRepository: Repository<Comment>,
     private readonly UsersService: UsersService,
-    private readonly ProductsService: ProductsService,
+    private readonly ProductsService: BlogsService,
   ) { }
 
   async createReview(dto: CreateReviewDto, productId: number, userId: number) {
-    const user = await this.UsersService.getCurrentUser(userId);
-    const product = await this.ProductsService.getProductById(productId);
+    // const user = await this.UsersService.getCurrentUser(userId);
+    // const product = await this.ProductsService.getProductById(productId);
 
-    if (!user) {
-      throw new Error('User not found');
-    }
-    if (!product) {
-      throw new Error('Product not found');
-    }
+    // if (!user) {
+    //   throw new Error('User not found');
+    // }
+    // if (!product) {
+    //   throw new Error('Product not found');
+    // }
 
-    const review = this.reviewsRepository.create({
-      ...dto,
-      user,
-      product,
-    });
-    await this.reviewsRepository.save(review);
-    return {
-      id: review.id,
-      rating: review.rating,
-      comment: review.comment,
-      created_at: review.created_at,
-      userId
-    }
+    // const comment = this.commentRepository.create({
+    //   ...dto,
+    //   user,
+    //   blog,
+    // });
+    // await this.commentRepository.save(comment);
+    // return {
+    //   id: comment.id,
+    //   rating: comment.rating,
+    //   comment: comment.comment,
+    //   created_at: comment.created_at,
+    //   userId
+    // }
   }
 
-  async GetAllReviews(pageNumber: number, pageSize: number) {
-    return await this.reviewsRepository.find({
+  async GetAllComments(pageNumber: number, pageSize: number) {
+    return await this.commentRepository.find({
       order: { created_at: 'DESC' },
       skip: (pageNumber - 1) * pageSize,
       take: pageSize
@@ -54,7 +54,7 @@ export class ReviewsService {
   }
 
   async getReviewById(id: number) {
-    const review = await this.reviewsRepository.findOne({ where: { id } });
+    const review = await this.commentRepository.findOne({ where: { id } });
     if (!review) {
       throw new NotFoundException(`Review with ID ${id} not found`);
     }
@@ -62,24 +62,25 @@ export class ReviewsService {
   }
 
   async update(id: number, updateReviewDto: UpdateReviewDto, userId: number) {
-    const review = await this.reviewsRepository.findOne({ where: { id } });
-    if (!review) {
-      throw new NotFoundException(`Review with ID ${id} not found`);
-    }
-    review.rating = updateReviewDto.rating ?? review.rating;
-    review.comment = updateReviewDto.comment ?? review.comment;
-    await this.reviewsRepository.save(review);
-    return review;
-  }
+    //   const review = await this.commentRepository.findOne({ where: { id } });
+    //   if (!review) {
+    //     throw new NotFoundException(`Review with ID ${id} not found`);
+    //   }
+    //   review.rating = updateReviewDto.rating ?? review.rating;
+    //   review.comment = updateReviewDto.comment ?? review.comment;
+    //   await this.commentRepository.save(review);
+    //   return review;
+    // }
 
-  async remove(id: number, payload: JwtPayloadType) {
-    const review = await this.reviewsRepository.findOne({ where: { id } });
-    if (!review) {
-      throw new NotFoundException(`Review with ID ${id} not found`);
-    }
-    if (review.user.id === payload.id || payload.userType === UserType.ADMIN) {
-      await this.reviewsRepository.remove(review);
-    }
-    return { message: `Review with ID ${id} removed` };
+    // async remove(id: number, payload: JwtPayloadType) {
+    //   const review = await this.commentRepository.findOne({ where: { id } });
+    //   if (!review) {
+    //     throw new NotFoundException(`Review with ID ${id} not found`);
+    //   }
+    //   if (comment.user.id === payload.id || payload.userType === UserType.ADMIN) {
+    //     await this.commentRepository.remove(review);
+    //   }
+    //   return { message: `Review with ID ${id} removed` };
+    // }
   }
 }

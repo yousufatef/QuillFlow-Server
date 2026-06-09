@@ -1,4 +1,4 @@
-import { AuthProvider } from './auth.provider';
+import { AuthProvider } from '../auth/auth.provider';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
@@ -16,8 +16,8 @@ export class UsersService {
 
   constructor(
     @InjectRepository(User) private readonly userRepository: Repository<User>,
-    private readonly AuthProvider: AuthProvider,
-    private readonly jwtService: JwtService,
+    // private readonly AuthProvider: AuthProvider,
+    // private readonly jwtService: JwtService,
 
   ) { }
 

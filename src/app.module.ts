@@ -8,14 +8,20 @@ import { UploadsModule } from './uploads/uploads.module';
 import { LoggerMiddleware } from './utils/middlewares/logger.middleware';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
-import { dataSourceOptions } from '../db/data-source';
 import { AcceptLanguageResolver, HeaderResolver, I18nModule, QueryResolver } from 'nestjs-i18n';
 import * as path from 'path';
 import { CommentsModule } from './comments/comments.module';
 import { BlogsModule } from './blogs/blogs.module';
+import { AuthModule } from './auth/auth.module';
+import { dataSourceOptions } from '../db/data-source';
+import { Blog } from './blogs/entities/blog.entity';
+import { User } from './users/entities/user.entity';
+import { Comment } from './comments/entities/comment.entity';
+import { CategoriesModule } from './categories/categories.module';
+import { Category } from './categories/entities/category.entity';
 
 @Module({
-  imports: [UsersModule, BlogsModule, CommentsModule, UploadsModule,
+  imports: [UsersModule, AuthModule, BlogsModule, CommentsModule, CategoriesModule, UploadsModule,
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: process.env.NODE_ENV !== "production" ? `.env.${process.env.NODE_ENV || 'development'}` : `.env`,
@@ -43,8 +49,24 @@ import { BlogsModule } from './blogs/blogs.module';
         },
       ],
     }),
-
-    TypeOrmModule.forRoot(dataSourceOptions)
+    // Remote DB 
+    // TypeOrmModule.forRoot(dataSourceOptions)
+    TypeOrmModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: async (config: ConfigService) => {
+        return {
+          type: 'postgres',
+          host: "localhost",
+          port: config.get<number>('DB_PORT'),
+          username: config.get<string>('DB_USERNAME'),
+          password: config.get<string>('DB_PASSWORD'),
+          database: config.get<string>('DB_DATABASE'),
+          entities: [Blog, User, Comment, Category],
+          synchronize: process.env.NODE_ENV !== 'production',
+        }
+      }
+    }),
+    CategoriesModule,
   ],
   controllers: [AppController],
   providers: [AppService, {

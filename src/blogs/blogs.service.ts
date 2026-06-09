@@ -2,15 +2,15 @@ import { Injectable } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-blog.dto';
 import { UpdateProductDto } from './dto/update-blog.dto';
 import { Between, ILike, LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm';
-import { Product } from './entities/blog.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UsersService } from '../users/users.service';
+import { Blog } from './entities/blog.entity';
 
 @Injectable()
-export class ProductsService {
+export class BlogsService {
   constructor(
-    @InjectRepository(Product)
-    private readonly productRepository: Repository<Product>,
+    @InjectRepository(Blog)
+    private readonly productRepository: Repository<Blog>,
     private readonly usersService: UsersService,
   ) { }
 
@@ -63,7 +63,6 @@ export class ProductsService {
     }
     product.title = updateProductDto.title ?? product.title;
     product.description = updateProductDto.description ?? product.description;
-    product.price = updateProductDto.price ?? product.price;
 
     return await this.productRepository.save(product);
   }
