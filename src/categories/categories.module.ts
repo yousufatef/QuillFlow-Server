@@ -1,9 +1,14 @@
 import { Module } from '@nestjs/common';
 import { CategoriesService } from './categories.service';
 import { CategoriesController } from './categories.controller';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Category } from './entities/category.entity';
+import { UsersModule } from '../users/users.module';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
+  imports: [TypeOrmModule.forFeature([Category]), UsersModule, JwtModule],
   controllers: [CategoriesController],
   providers: [CategoriesService],
 })
-export class CategoriesModule {}
+export class CategoriesModule { }

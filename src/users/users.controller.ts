@@ -58,6 +58,13 @@ export class UsersController {
     return this.usersService.getAllUsers();
   }
 
+  @Get(":id")
+  @Roles(UserType.ADMIN)
+  @UseGuards(AuthRoleGuard)
+  getUserById(@Param('id') id: string) {
+    return this.usersService.getUserById(+id);
+  }
+
   @Get('current-user')
   @UseGuards(AuthGuard)
   getCurrentUser(@CurrentUser() payload: JwtPayloadType) {
