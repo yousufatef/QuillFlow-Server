@@ -1,19 +1,24 @@
-import { IsNotEmpty, IsNumber, IsString, Length, Min } from "class-validator";
+import { IsNotEmpty, IsNumber, IsString, Length, IsOptional } from "class-validator";
+import { Type } from "class-transformer";
 import { i18nValidationMessage } from 'nestjs-i18n';
 
-export class CreateProductDto {
+export class CreateBlogDto {
 
     @IsString({ message: i18nValidationMessage('validation.isString') })
     @IsNotEmpty({ message: i18nValidationMessage('validation.isNotEmpty') })
-    @Length(2, 150, { message: i18nValidationMessage('validation.length') })
+    @Length(2, 200, { message: i18nValidationMessage('validation.length') })
     title!: string;
 
     @IsString({ message: i18nValidationMessage('validation.isString') })
+    @IsNotEmpty({ message: i18nValidationMessage('validation.isNotEmpty') })
     description!: string;
 
+    @Type(() => Number)
     @IsNumber({}, { message: i18nValidationMessage('validation.isNumber') })
     @IsNotEmpty({ message: i18nValidationMessage('validation.isNotEmpty') })
-    @Min(0, { message: i18nValidationMessage('validation.min') })
-    price!: number;
+    categoryId!: number;
 
+    @IsOptional()
+    @IsString({ message: i18nValidationMessage('validation.isString') })
+    image?: string;
 }

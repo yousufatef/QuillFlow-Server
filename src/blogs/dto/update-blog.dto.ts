@@ -1,17 +1,25 @@
 import { PartialType } from '@nestjs/mapped-types';
-import { CreateProductDto } from './create-blog.dto';
-import { Min, IsNotEmpty, IsNumber, IsString, Length } from 'class-validator';
+import { CreateBlogDto } from './create-blog.dto';
+import { IsNotEmpty, IsNumber, IsOptional, IsString, Length } from 'class-validator';
+import { i18nValidationMessage } from 'nestjs-i18n';
+import { Type } from 'class-transformer';
 
-export class UpdateProductDto extends PartialType(CreateProductDto) {
-    @IsString()
-    @Length(2, 150)
+export class UpdateBlogDto extends PartialType(CreateBlogDto) {
+    @IsString({ message: i18nValidationMessage('validation.isString') })
+    @IsNotEmpty({ message: i18nValidationMessage('validation.isNotEmpty') })
+    @Length(2, 200, { message: i18nValidationMessage('validation.length') })
     title!: string;
 
-
-    @IsString()
+    @IsString({ message: i18nValidationMessage('validation.isString') })
+    @IsNotEmpty({ message: i18nValidationMessage('validation.isNotEmpty') })
     description!: string;
 
-    @IsNumber()
-    @Min(0, { message: 'Price must be a non-negative number' })
-    price!: number;
+    @Type(() => Number)
+    @IsNumber({}, { message: i18nValidationMessage('validation.isNumber') })
+    @IsNotEmpty({ message: i18nValidationMessage('validation.isNotEmpty') })
+    categoryId!: number;
+
+    @IsOptional()
+    @IsString({ message: i18nValidationMessage('validation.isString') })
+    image?: string;
 }

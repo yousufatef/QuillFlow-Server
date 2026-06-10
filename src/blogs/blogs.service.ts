@@ -1,78 +1,77 @@
 import { Injectable } from '@nestjs/common';
-import { CreateProductDto } from './dto/create-blog.dto';
-import { UpdateProductDto } from './dto/update-blog.dto';
+import { CreateBlogDto } from './dto/create-blog.dto';
 import { Between, ILike, LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UsersService } from '../users/users.service';
 import { Blog } from './entities/blog.entity';
+import { Category } from '../categories/entities/category.entity';
+import { UpdateBlogDto } from './dto/update-blog.dto';
 
 @Injectable()
 export class BlogsService {
   constructor(
     @InjectRepository(Blog)
-    private readonly productRepository: Repository<Blog>,
+    private readonly blogRepository: Repository<Blog>,
     private readonly usersService: UsersService,
   ) { }
 
-
-  async createProduct(createProductDto: CreateProductDto, userId: number) {
+  async createBlog(createBlogDto: CreateBlogDto, userId: number, coverImage?: string) {
     const user = await this.usersService.getCurrentUser(userId);
     if (!user) {
       throw new Error('User not found');
     }
 
-    const product = this.productRepository.create({
-      ...createProductDto,
-      title: createProductDto.title?.toLowerCase(),
-      user
+    const blog = this.blogRepository.create({
+      ...createBlogDto,
+      title: createBlogDto.title?.toLowerCase(),
+      coverImage: coverImage ?? null,
+      user,
+      category: { id: createBlogDto.categoryId } as Category
     });
-    await this.productRepository.save(product);
-    return product;
-  }
 
-  async getAllProducts(title?: string, minPrice?: string, maxPrice?: string) {
+    await this.blogRepository.save(blog);
+    return blog;
+  }
+  async getAllBlogs(title?: string, categoryId?: number) {
     const filters: any = {};
 
     if (title) {
       filters.title = ILike(`%${title}%`);
     }
 
-    if (minPrice && maxPrice) {
-      filters.price = Between(parseFloat(minPrice), parseFloat(maxPrice));
-    } else if (minPrice) {
-      filters.price = MoreThanOrEqual(parseFloat(minPrice));
-    } else if (maxPrice) {
-      filters.price = LessThanOrEqual(parseFloat(maxPrice));
+    if (categoryId) {
+      filters.category = { id: categoryId };
     }
 
-    return this.productRepository.find({ where: filters });
+    return this.blogRepository.find({ where: filters });
   }
 
-  async getProductById(id: number) {
-    const product = await this.productRepository.findOne({ where: { id } });
+  async getBlogById(id: number) {
+    const product = await this.blogRepository.findOne({ where: { id } });
     if (!product) {
       throw new Error(`Product with ID ${id} not found`);
     }
     return product;
   }
 
-  async update(id: number, updateProductDto: UpdateProductDto) {
-    const product = await this.productRepository.findOne({ where: { id } });
+  async update(id: number, updateBlogDto: UpdateBlogDto) {
+    const product = await this.blogRepository.findOne({ where: { id } });
     if (!product) {
       throw new Error(`Product with ID ${id} not found`);
     }
-    product.title = updateProductDto.title ?? product.title;
-    product.description = updateProductDto.description ?? product.description;
+    product.title = updateBlogDto.title ?? product.title;
+    product.description = updateBlogDto.description ?? product.description;
 
-    return await this.productRepository.save(product);
+    return await this.blogRepository.save(product);
   }
 
   async remove(id: number) {
-    const product = await this.productRepository.findOne({ where: { id } });
-    if (!product) {
-      throw new Error(`Product with ID ${id} not found`);
+    const blog = await this.blogRepository.findOne({ where: { id } });
+    if (!blog) {
+      throw new Error(`blog with ID ${id} not found`);
     }
-    return await this.productRepository.remove(product);
+    await this.blogRepository.remove(blog);
+    return `Blog with ID ${id} has been deleted`;
   }
 
 

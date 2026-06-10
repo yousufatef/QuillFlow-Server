@@ -2,7 +2,6 @@ import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGenerate
 import { CURRENT_TIMESTAMP } from "../../utils/constants";
 import { User } from "../../users/entities/user.entity";
 import { Comment } from "../../comments/entities/comment.entity";
-import { IsNumber } from "class-validator";
 import { Category } from "../../categories/entities/category.entity";
 
 @Entity({ name: 'blogs' })
@@ -16,8 +15,8 @@ export class Blog {
     @Column({ type: 'text' })
     description!: string;
 
-    @Column({ default: null, nullable: true })
-    coverImage!: string;
+    @Column({ type: 'varchar', nullable: true, default: null })
+    coverImage?: string | null;
 
     @Column({ type: 'boolean', default: false })
     is_published!: boolean;
