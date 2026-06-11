@@ -24,9 +24,10 @@ import { PermissionsModule } from './permissions/permissions.module';
 import { Role } from './roles/entities/role.entity';
 import { Permission } from './permissions/entities/permission.entity';
 import { RolePermission } from './roles/entities/role-permission.entity';
+import { AdminsModule } from './admins/admins.module';
 
 @Module({
-  imports: [UsersModule, AuthModule, BlogsModule,
+  imports: [UsersModule, AdminsModule, AuthModule, BlogsModule,
     CommentsModule, RolesModule, PermissionsModule, RolePermission,
     CategoriesModule, UploadsModule,
     ConfigModule.forRoot({

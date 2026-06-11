@@ -17,7 +17,13 @@ export class AuthController {
     @Post('login')
     @HttpCode(HttpStatus.OK)
     login(@Body() loginDto: LoginDto) {
-        return this.authService.login(loginDto);
+        return this.authService.loginUser(loginDto);
+    }
+
+    @Post('login-admin')
+    @HttpCode(HttpStatus.OK)
+    loginAdmin(@Body() loginDto: LoginDto) {
+        return this.authService.loginAdmin(loginDto);
     }
 
     @Post('refresh')

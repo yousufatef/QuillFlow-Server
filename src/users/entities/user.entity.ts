@@ -1,4 +1,4 @@
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, Unique, UpdateDateColumn } from "typeorm";
 import { CURRENT_TIMESTAMP } from "../../utils/constants";
 import { Blog } from "../../blogs/entities/blog.entity";
 import { Comment } from "../../comments/entities/comment.entity";
@@ -7,11 +7,12 @@ import { Exclude } from "class-transformer";
 import { Role } from "../../roles/entities/role.entity";
 
 @Entity({ name: 'users' })
+@Unique(['email', 'userType'])
 export class User {
     @PrimaryGeneratedColumn()
     id!: number;
 
-    @Column({ type: 'varchar', length: 250, unique: true })
+    @Column({ type: 'varchar', length: 250 })
     email!: string;
 
     @Column({ type: 'varchar', length: 150, nullable: true })

@@ -1,8 +1,21 @@
 import { UserType } from "./enums";
 
+
+export type User = {
+    id: number;
+    email: string;
+    username: string;
+    userType: UserType;
+    isAccountVerified: boolean;
+    profileImage: string;
+    created_at: Date;
+    updated_at: Date;
+};
+
 export type authTokensType = {
     accessToken: string;
     refreshToken: string;
+    user: User
 };
 
 export type JwtPayloadType = {

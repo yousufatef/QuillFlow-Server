@@ -1,0 +1,86 @@
+import { Controller, Get, Post, Body, Param, Delete, UseGuards, Put, BadRequestException, UploadedFile, UseInterceptors, Res } from '@nestjs/common';
+
+;
+import { UserType } from '../utils/enums';
+import { FileInterceptor } from '@nestjs/platform-express';
+import type { JwtPayloadType } from '../utils/types';
+import type { Response } from 'express';
+import { AdminsService } from './admins.service';
+import { CurrentUser } from '../users/decorators/current-user.decorator';
+import { Roles } from '../users/decorators/user-role.decorator';
+import { AuthRoleGuard } from '../users/guards/auth-role.guard';
+import { AuthGuard } from '../users/guards/auth.guard';
+import { CreateAdminDto } from './dto/create-admin.dto';
+import { UpdateAdminDto } from './dto/update-admin.dto';
+
+@Controller('admins')
+export class AdminsController {
+  constructor(private readonly adminsService: AdminsService) { }
+
+  @Post()
+  @Roles(UserType.ADMIN)
+  @UseGuards(AuthRoleGuard)
+  create(@Body() createAdminDto: CreateAdminDto) {
+    return this.adminsService.create(createAdminDto);
+  }
+
+  @Put(':id')
+  @Roles(UserType.ADMIN)
+  @UseGuards(AuthRoleGuard)
+  update(@CurrentUser() payload: JwtPayloadType, @Body() body: UpdateAdminDto) {
+    return this.adminsService.update(payload.id, body);
+  }
+
+  @Delete(':id')
+  @Roles(UserType.ADMIN)
+  @UseGuards(AuthRoleGuard)
+  remove(
+    @Param('id') id: number,
+    @CurrentUser() payload: JwtPayloadType
+  ) {
+    return this.adminsService.remove(id);
+  }
+
+  @Post('upload-profile-image')
+  @UseGuards(AuthGuard)
+  @UseInterceptors(FileInterceptor('user-image'))
+  uploadProfileImage(
+    @UploadedFile() file: Express.Multer.File,
+    @CurrentUser() payload: JwtPayloadType,
+  ) {
+    if (!file) throw new BadRequestException('No file uploaded');
+    return this.adminsService.uploadProfileImage(file.filename, payload.id);
+  }
+
+  @Delete('images/remove-profile-image')
+  @UseGuards(AuthGuard)
+  removeProfileImage(@CurrentUser() payload: JwtPayloadType) {
+    return this.adminsService.removeProfileImage(payload.id);
+  }
+
+  @Get('images/:image')
+  @UseGuards(AuthGuard)
+  getProfile(@Param('image') image: string, @Res() res: Response) {
+    return res.sendFile(image, { root: './uploads/profile-images' });
+  }
+
+  @Get()
+  @Roles(UserType.ADMIN)
+  @UseGuards(AuthRoleGuard)
+  getAllUsers() {
+    return this.adminsService.getAllUsers();
+  }
+
+  @Get(":id")
+  @Roles(UserType.ADMIN)
+  @UseGuards(AuthRoleGuard)
+  getUserById(@Param('id') id: string) {
+    return this.adminsService.getUserById(+id);
+  }
+
+  @Get('current-user')
+  @UseGuards(AuthGuard)
+  getCurrentUser(@CurrentUser() payload: JwtPayloadType) {
+    return this.adminsService.getCurrentUser(payload.id);
+  }
+}

@@ -7,6 +7,7 @@ import * as bcrypt from 'bcryptjs';
 import { LoginDto } from './dto/login.dto';
 import { JwtService } from '@nestjs/jwt';
 import { authTokensType, JwtPayloadType } from '../utils/types';
+import { UserType } from '../utils/enums';
 
 @Injectable()
 export class AuthProvider {
@@ -37,14 +38,25 @@ export class AuthProvider {
             this.generateAccessToken(user),
             this.generateRefreshToken(user),
         ]);
-        return { accessToken, refreshToken };
+
+        const { password, ...userWithoutPassword } = user;
+
+        return {
+            accessToken,
+            refreshToken,
+            user: userWithoutPassword
+        };
     }
 
     async register(registerDto: RegisterDto): Promise<authTokensType> {
         const { email, username, password } = registerDto;
 
-        const existingUser = await this.userRepository.findOne({ where: { email } });
-        if (existingUser) {
+        const existingUser = await this.userRepository.findOne({
+            where: {
+                email,
+                userType: UserType.NORMAL_USER
+            }
+        }); if (existingUser) {
             throw new BadRequestException('User already exists');
         }
 
@@ -57,22 +69,35 @@ export class AuthProvider {
         return this.generateTokens(newUser);
     }
 
-    async login(loginDto: LoginDto): Promise<authTokensType> {
+    async loginUser(loginDto: LoginDto): Promise<authTokensType> {
         const { email, password } = loginDto;
 
-        const user = await this.userRepository.findOne({ where: { email } });
-        if (!user) {
-            throw new BadRequestException('Invalid credentials');
-        }
+        const user = await this.userRepository.findOne({
+            where: { email, userType: UserType.NORMAL_USER }
+        });
+
+        if (!user) throw new BadRequestException('Invalid credentials');
 
         const isPasswordValid = await bcrypt.compare(password, user.password);
-        if (!isPasswordValid) {
-            throw new BadRequestException('Invalid credentials');
-        }
+        if (!isPasswordValid) throw new BadRequestException('Invalid credentials');
 
         return this.generateTokens(user);
     }
 
+    async loginAdmin(loginDto: LoginDto): Promise<authTokensType> {
+        const { email, password } = loginDto;
+
+        const user = await this.userRepository.findOne({
+            where: { email, userType: UserType.ADMIN }
+        });
+
+        if (!user) throw new BadRequestException('Invalid credentials');
+
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (!isPasswordValid) throw new BadRequestException('Invalid credentials');
+
+        return this.generateTokens(user);
+    }
     async refreshToken(token: string): Promise<authTokensType> {
         try {
             const payload = await this.jwtService.verifyAsync<JwtPayloadType>(token, {
