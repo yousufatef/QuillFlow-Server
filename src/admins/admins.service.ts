@@ -33,7 +33,7 @@ export class AdminsService {
     });
 
     if (existingEmail) {
-      throw new BadRequestException('Admin with this username already exists');
+      throw new BadRequestException('common.admins.alreadyExists');
     }
 
     const hashedPassword = await this.hashPassword(password);
@@ -54,14 +54,14 @@ export class AdminsService {
     try {
       const user = await this.userRepository.findOne({ where: { id, userType: UserType.ADMIN } });
       if (!user) {
-        throw new BadRequestException('Admin not found');
+        throw new BadRequestException('common.admins.notFound');
       }
-      user.username = username;
+      user.username = username as string;
       user.password = await this.hashPassword(password);
       user.email = email
 
       await this.userRepository.save(user);
-      return { message: 'Admin updated successfully' };
+      return user;
     } catch (error) {
       throw error;
     }
@@ -88,7 +88,7 @@ export class AdminsService {
   async remove(id: number) {
     const user = await this.userRepository.findOne({ where: { id } });
     if (!user) {
-      throw new BadRequestException('User not found');
+      throw new BadRequestException('common.users.notFound');
     }
 
     // Clean up profile image before deleting user
@@ -100,14 +100,14 @@ export class AdminsService {
     }
 
     await this.userRepository.delete(id);
-    return { message: 'User removed successfully' };
+    return null;
   }
 
   async removeProfileImage(userId: number) {
     const user = await this.getCurrentUser(userId);
 
     if (user.profileImage === null) {
-      throw new BadRequestException('No profile image to remove');
+      throw new BadRequestException('common.users.noProfileImage');
     }
 
     const imagePath = join(process.cwd(), `uploads/profile-images/${user.profileImage}`);
@@ -125,7 +125,7 @@ export class AdminsService {
 
     const user = await this.userRepository.findOne({ where: { id } });
     if (!user) {
-      throw new BadRequestException('User not found');
+      throw new BadRequestException('common.users.notFound');
     }
     return user;
 
@@ -139,7 +139,7 @@ export class AdminsService {
     try {
       const user = await this.userRepository.findOne({ where: { id, userType: UserType.ADMIN } });
       if (!user) {
-        throw new BadRequestException('Admin not found');
+        throw new BadRequestException('common.admins.notFound');
       }
       return user;
     } catch (error) {

@@ -10,10 +10,16 @@ export class Blog {
     id!: number;
 
     @Column({ type: 'varchar', length: 255 })
-    title!: string;
+    nameEn!: string;
+
+    @Column({ type: 'varchar', length: 255 })
+    nameAr!: string;
 
     @Column({ type: 'text' })
-    description!: string;
+    descriptionEn!: string;
+
+    @Column({ type: 'text' })
+    descriptionAr!: string;
 
     @Column({ type: 'varchar', nullable: true, default: null })
     coverImage?: string | null;

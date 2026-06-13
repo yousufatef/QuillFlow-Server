@@ -5,6 +5,7 @@ import { UpdateCommentDto } from './dto/update-comment.dto';
 import { CurrentUser } from '../users/decorators/current-user.decorator';
 import type { JwtPayloadType } from '../utils/types';
 import { AuthGuard } from '../users/guards/auth.guard';
+import { ResponseMessage } from '../utils/decorators/response-message.decorator';
 
 @Controller('comments')
 export class CommentsController {
@@ -14,6 +15,7 @@ export class CommentsController {
 
   @Post(':blogId')
   @UseGuards(AuthGuard)
+  @ResponseMessage('comments.created')
   createNewComment(
     @Param('blogId', ParseIntPipe) blogId: number,
     @Body() createCommentDto: CreateCommentDto,
@@ -24,12 +26,14 @@ export class CommentsController {
 
   @Get(':id')
   @UseGuards(AuthGuard)
+  @ResponseMessage('comments.retrieved')
   getCommentById(@Param('id', ParseIntPipe) id: number, @CurrentUser() payload: JwtPayloadType) {
     return this.commentsService.getCommentById(id, payload.id);
   }
 
   @Put(':id')
   @UseGuards(AuthGuard)
+  @ResponseMessage('comments.updated')
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateCommentDto: UpdateCommentDto,
@@ -40,6 +44,7 @@ export class CommentsController {
 
   @Delete(':id')
   @UseGuards(AuthGuard)
+  @ResponseMessage('comments.deleted')
   remove(@Param('id', ParseIntPipe) id: number, @CurrentUser() payload: JwtPayloadType) {
     return this.commentsService.remove(id, payload.id);
   }

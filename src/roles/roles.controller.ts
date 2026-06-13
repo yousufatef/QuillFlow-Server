@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, UseGuards, Put, Query } from '@nestjs/common';
 import { RolesService } from './roles.service';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
@@ -7,6 +7,7 @@ import { Roles } from '../users/decorators/user-role.decorator';
 import { UserType } from '../utils/enums';
 import { PermissionGuard } from '../users/guards/permission.guard';
 import { RequirePermissions } from '../users/decorators/permissions.decorator';
+import { ResponseMessage } from '../utils/decorators/response-message.decorator';
 
 @Controller('roles')
 export class RolesController {
@@ -16,6 +17,7 @@ export class RolesController {
   @UseGuards(AuthRoleGuard, PermissionGuard)
   @Roles(UserType.SUPER_ADMIN, UserType.ADMIN)
   @RequirePermissions({ resource: 'Roles', action: 'create' })
+  @ResponseMessage('roles.created')
   create(@Body() dto: CreateRoleDto) {
     return this.rolesService.create(dto);
   }
@@ -24,6 +26,7 @@ export class RolesController {
   @UseGuards(AuthRoleGuard, PermissionGuard)
   @Roles(UserType.SUPER_ADMIN, UserType.ADMIN)
   @RequirePermissions({ resource: 'Roles', action: 'update' })
+  @ResponseMessage('roles.updated')
   update(@Param('id') id: string, @Body() dto: UpdateRoleDto) {
     return this.rolesService.update(+id, dto);
   }
@@ -32,14 +35,16 @@ export class RolesController {
   @UseGuards(AuthRoleGuard, PermissionGuard)
   @Roles(UserType.SUPER_ADMIN, UserType.ADMIN)
   @RequirePermissions({ resource: 'Roles', action: 'read' })
-  findAll() {
-    return this.rolesService.findAll();
+  @ResponseMessage('roles.listRetrieved')
+  findAll(@Query('name') name?: string) {
+    return this.rolesService.findAll(name);
   }
 
   @Get(':id')
   @UseGuards(AuthRoleGuard, PermissionGuard)
   @Roles(UserType.SUPER_ADMIN, UserType.ADMIN)
   @RequirePermissions({ resource: 'Roles', action: 'read' })
+  @ResponseMessage('roles.retrieved')
   findOne(@Param('id') id: string) {
     return this.rolesService.findOne(+id);
   }
@@ -48,6 +53,7 @@ export class RolesController {
   @UseGuards(AuthRoleGuard, PermissionGuard)
   @Roles(UserType.SUPER_ADMIN, UserType.ADMIN)
   @RequirePermissions({ resource: 'Roles', action: 'read' })
+  @ResponseMessage('roles.retrieved')
   findOneWithPermissions(@Param('id') id: string) {
     return this.rolesService.findOneWithPermissions(+id);
   }
@@ -56,6 +62,7 @@ export class RolesController {
   @UseGuards(AuthRoleGuard, PermissionGuard)
   @Roles(UserType.SUPER_ADMIN, UserType.ADMIN)
   @RequirePermissions({ resource: 'Roles', action: 'delete' })
+  @ResponseMessage('roles.deleted')
   remove(@Param('id') id: string) {
     return this.rolesService.remove(+id);
   }

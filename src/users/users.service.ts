@@ -27,14 +27,14 @@ export class UsersService {
     try {
       const user = await this.userRepository.findOne({ where: { id } });
       if (!user) {
-        throw new BadRequestException('User not found');
+        throw new BadRequestException('common.users.notFound');
       }
       if (username) user.username = username;
       if (password) {
         user.password = await this.hashPassword(password);
       }
       await this.userRepository.save(user);
-      return { message: 'User updated successfully' };
+      return user;
     } catch (error) {
       throw error;
     }
@@ -43,7 +43,7 @@ export class UsersService {
   async remove(id: number) {
     const user = await this.userRepository.findOne({ where: { id } });
     if (!user) {
-      throw new BadRequestException('User not found');
+      throw new BadRequestException('common.users.notFound');
     }
     if (user.id === id || user.userType === UserType.ADMIN) {
       // Clean up profile image before deleting user
@@ -54,7 +54,7 @@ export class UsersService {
         }
       }
       await this.userRepository.delete(id);
-      return { message: 'User removed successfully' };
+      return null;
     }
   }
 
@@ -79,7 +79,7 @@ export class UsersService {
     const user = await this.getCurrentUser(userId);
 
     if (user.profileImage === null) {
-      throw new BadRequestException('No profile image to remove');
+      throw new BadRequestException('common.users.noProfileImage');
     }
 
     const imagePath = join(process.cwd(), `uploads/profile-images/${user.profileImage}`);
@@ -97,7 +97,7 @@ export class UsersService {
 
     const user = await this.userRepository.findOne({ where: { id } });
     if (!user) {
-      throw new BadRequestException('User not found');
+      throw new BadRequestException('common.users.notFound');
     }
     return user;
 
@@ -111,7 +111,7 @@ export class UsersService {
     try {
       const user = await this.userRepository.findOne({ where: { id } });
       if (!user) {
-        throw new BadRequestException('User not found');
+        throw new BadRequestException('common.users.notFound');
       }
       return user;
     } catch (error) {

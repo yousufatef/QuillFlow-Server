@@ -7,7 +7,10 @@ export class Role {
     id!: number;
 
     @Column({ unique: true })
-    name!: string;
+    nameEn!: string;
+
+    @Column({ unique: true })
+    nameAr!: string;
 
     @Column({ default: true })
     isActive!: boolean;

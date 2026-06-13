@@ -26,7 +26,7 @@ export class AuthRoleGuard implements CanActivate {
         ]);
 
         if (!roles || roles.length === 0) {
-            throw new UnauthorizedException("Access denied, no roles defined for this route");
+            throw new UnauthorizedException("common.auth.noRoles");
         }
 
         const request: Request = context.switchToHttp().getRequest()
@@ -47,10 +47,10 @@ export class AuthRoleGuard implements CanActivate {
                 }
 
             } catch (error) {
-                throw new UnauthorizedException("Access denied, invalid token")
+                throw new UnauthorizedException("common.auth.invalidToken")
             }
         } else {
-            throw new UnauthorizedException("Access denied, no token provided")
+            throw new UnauthorizedException("common.auth.noToken")
         }
         return false;
     }

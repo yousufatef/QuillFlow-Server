@@ -8,7 +8,10 @@ export class Category {
     id!: number;
 
     @Column({ type: 'varchar', length: 100, unique: true })
-    name!: string;
+    nameEn!: string;
+
+    @Column({ type: 'varchar', length: 100, unique: true })
+    nameAr!: string;
 
     @Column({ type: 'text', nullable: true })
     description!: string;

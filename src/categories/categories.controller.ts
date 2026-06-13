@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, UseGuards, Put } from '@nestjs/common';
 import { CategoriesService } from './categories.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
@@ -7,6 +7,7 @@ import { UserType } from '../utils/enums';
 import { AuthRoleGuard } from '../users/guards/auth-role.guard';
 import { PermissionGuard } from '../users/guards/permission.guard';
 import { RequirePermissions } from '../users/decorators/permissions.decorator';
+import { ResponseMessage } from '../utils/decorators/response-message.decorator';
 
 @Controller('categories')
 export class CategoriesController {
@@ -16,6 +17,7 @@ export class CategoriesController {
   @UseGuards(AuthRoleGuard, PermissionGuard)
   @Roles(UserType.SUPER_ADMIN, UserType.ADMIN)
   @RequirePermissions({ resource: 'Categories', action: 'create' })
+  @ResponseMessage('categories.created')
   create(@Body() createCategoryDto: CreateCategoryDto) {
     return this.categoriesService.create(createCategoryDto);
   }
@@ -24,6 +26,7 @@ export class CategoriesController {
   @UseGuards(AuthRoleGuard, PermissionGuard)
   @Roles(UserType.SUPER_ADMIN, UserType.ADMIN)
   @RequirePermissions({ resource: 'Categories', action: 'read' })
+  @ResponseMessage('categories.listRetrieved')
   findAll() {
     return this.categoriesService.findAll();
   }
@@ -32,6 +35,7 @@ export class CategoriesController {
   @UseGuards(AuthRoleGuard, PermissionGuard)
   @Roles(UserType.SUPER_ADMIN, UserType.ADMIN)
   @RequirePermissions({ resource: 'Categories', action: 'read' })
+  @ResponseMessage('categories.retrieved')
   findOne(@Param('id') id: string) {
     return this.categoriesService.findOne(+id);
   }
@@ -40,6 +44,7 @@ export class CategoriesController {
   @UseGuards(AuthRoleGuard, PermissionGuard)
   @Roles(UserType.SUPER_ADMIN, UserType.ADMIN)
   @RequirePermissions({ resource: 'Categories', action: 'update' })
+  @ResponseMessage('categories.updated')
   update(@Param('id') id: string, @Body() updateCategoryDto: UpdateCategoryDto) {
     return this.categoriesService.update(+id, updateCategoryDto);
   }
@@ -48,6 +53,7 @@ export class CategoriesController {
   @UseGuards(AuthRoleGuard, PermissionGuard)
   @Roles(UserType.SUPER_ADMIN, UserType.ADMIN)
   @RequirePermissions({ resource: 'Categories', action: 'delete' })
+  @ResponseMessage('categories.deleted')
   remove(@Param('id') id: string) {
     return this.categoriesService.remove(+id);
   }

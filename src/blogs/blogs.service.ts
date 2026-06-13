@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateBlogDto } from './dto/create-blog.dto';
-import { Between, ILike, LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UsersService } from '../users/users.service';
 import { Blog } from './entities/blog.entity';
@@ -18,12 +18,11 @@ export class BlogsService {
   async createBlog(createBlogDto: CreateBlogDto, userId: number, coverImage?: string) {
     const user = await this.usersService.getCurrentUser(userId);
     if (!user) {
-      throw new Error('User not found');
+      throw new NotFoundException('common.users.notFound');
     }
 
     const blog = this.blogRepository.create({
       ...createBlogDto,
-      title: createBlogDto.title?.toLowerCase(),
       coverImage: coverImage ?? null,
       user,
       category: { id: createBlogDto.categoryId } as Category
@@ -32,11 +31,16 @@ export class BlogsService {
     await this.blogRepository.save(blog);
     return blog;
   }
-  async getAllBlogs(title?: string, categoryId?: number) {
+  async getAllBlogs(name?: string, categoryId?: number) {
     const filters: any = {};
 
-    if (title) {
-      filters.title = ILike(`%${title}%`);
+    if (name) {
+      return this.blogRepository.find({
+        where: [
+          { nameEn: ILike(`%${name}%`), ...(categoryId ? { category: { id: categoryId } } : {}) },
+          { nameAr: ILike(`%${name}%`), ...(categoryId ? { category: { id: categoryId } } : {}) },
+        ],
+      });
     }
 
     if (categoryId) {
@@ -47,31 +51,36 @@ export class BlogsService {
   }
 
   async getBlogById(id: number) {
-    const product = await this.blogRepository.findOne({ where: { id } });
-    if (!product) {
-      throw new Error(`Product with ID ${id} not found`);
+    const blog = await this.blogRepository.findOne({ where: { id } });
+    if (!blog) {
+      throw new NotFoundException('common.blogs.notFound');
     }
-    return product;
+    return blog;
   }
 
   async update(id: number, updateBlogDto: UpdateBlogDto) {
-    const product = await this.blogRepository.findOne({ where: { id } });
-    if (!product) {
-      throw new Error(`Product with ID ${id} not found`);
+    const blog = await this.blogRepository.findOne({ where: { id } });
+    if (!blog) {
+      throw new NotFoundException('common.blogs.notFound');
     }
-    product.title = updateBlogDto.title ?? product.title;
-    product.description = updateBlogDto.description ?? product.description;
+    blog.nameEn = updateBlogDto.nameEn ?? blog.nameEn;
+    blog.nameAr = updateBlogDto.nameAr ?? blog.nameAr;
+    blog.descriptionEn = updateBlogDto.descriptionEn ?? blog.descriptionEn;
+    blog.descriptionAr = updateBlogDto.descriptionAr ?? blog.descriptionAr;
+    blog.category = updateBlogDto.categoryId
+      ? ({ id: updateBlogDto.categoryId } as Category)
+      : blog.category;
 
-    return await this.blogRepository.save(product);
+    return await this.blogRepository.save(blog);
   }
 
   async remove(id: number) {
     const blog = await this.blogRepository.findOne({ where: { id } });
     if (!blog) {
-      throw new Error(`blog with ID ${id} not found`);
+      throw new NotFoundException('common.blogs.notFound');
     }
     await this.blogRepository.remove(blog);
-    return `Blog with ID ${id} has been deleted`;
+    return null;
   }
 
 

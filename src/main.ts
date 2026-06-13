@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import helmet from 'helmet';
-import { I18nValidationExceptionFilter, I18nValidationPipe } from 'nestjs-i18n';
+import { I18nValidationPipe } from 'nestjs-i18n';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -11,12 +11,6 @@ async function bootstrap() {
     forbidNonWhitelisted: true,
     transform: true,
   }));
-
-  app.useGlobalFilters(
-    new I18nValidationExceptionFilter({
-      detailedErrors: false, // ← set true only for debugging
-    })
-  );
 
   app.use(helmet());
 

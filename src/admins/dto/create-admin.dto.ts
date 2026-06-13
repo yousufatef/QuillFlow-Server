@@ -1,23 +1,25 @@
-import { IsInt, IsNotEmpty, IsOptional, IsPositive, IsString, Length } from 'class-validator';
+import { IsEmail, IsInt, IsNotEmpty, IsOptional, IsPositive, IsString, Length, Min } from 'class-validator';
+import { i18nValidationMessage } from 'nestjs-i18n';
 
 export class CreateAdminDto {
 
-    @IsString()
-    @IsOptional()
-    @Length(2, 150)
+    @IsString({ message: i18nValidationMessage('validation.isString') })
+    @Length(2, 150, { message: i18nValidationMessage('validation.usernameLength') })
     username?: string;
 
-    @IsString()
-    @IsNotEmpty()
-    password: string;
+    @IsString({ message: i18nValidationMessage('validation.isString') })
+    @IsNotEmpty({ message: i18nValidationMessage('validation.passwordRequired') })
+    @Length(8, 128, { message: i18nValidationMessage('validation.passwordLength') })
+    password!: string;
 
-    @IsString()
-    @IsNotEmpty()
-    @Length(5, 255)
-    email: string;
+    @IsString({ message: i18nValidationMessage('validation.isString') })
+    @IsEmail({}, { message: i18nValidationMessage('validation.isEmail') })
+    @IsNotEmpty({ message: i18nValidationMessage('validation.emailRequired') })
+    @Length(5, 255, { message: i18nValidationMessage('validation.emailLength') })
+    email!: string;
 
-    @IsInt()
-    @IsPositive()
+    @IsInt({ message: i18nValidationMessage('validation.roleIdInt') })
+    @IsPositive({ message: i18nValidationMessage('validation.roleIdPositive') })
     @IsOptional()
     roleId?: number;
 }

@@ -3,22 +3,30 @@ import { Type } from "class-transformer";
 import { i18nValidationMessage } from 'nestjs-i18n';
 
 export class CreateBlogDto {
+    @IsString({ message: i18nValidationMessage('validation.nameEnString') })
+    @IsNotEmpty({ message: i18nValidationMessage('validation.nameEnRequired') })
+    @Length(2, 200, { message: i18nValidationMessage('validation.nameEnLength') })
+    nameEn!: string;
 
-    @IsString({ message: i18nValidationMessage('validation.isString') })
-    @IsNotEmpty({ message: i18nValidationMessage('validation.isNotEmpty') })
-    @Length(2, 200, { message: i18nValidationMessage('validation.length') })
-    title!: string;
+    @IsString({ message: i18nValidationMessage('validation.nameArString') })
+    @IsNotEmpty({ message: i18nValidationMessage('validation.nameArRequired') })
+    @Length(2, 200, { message: i18nValidationMessage('validation.nameArLength') })
+    nameAr!: string;
 
-    @IsString({ message: i18nValidationMessage('validation.isString') })
-    @IsNotEmpty({ message: i18nValidationMessage('validation.isNotEmpty') })
-    description!: string;
+    @IsString({ message: i18nValidationMessage('validation.descriptionEnString') })
+    @IsNotEmpty({ message: i18nValidationMessage('validation.descriptionEnRequired') })
+    descriptionEn!: string;
+
+    @IsString({ message: i18nValidationMessage('validation.descriptionArString') })
+    @IsNotEmpty({ message: i18nValidationMessage('validation.descriptionArRequired') })
+    descriptionAr!: string;
 
     @Type(() => Number)
-    @IsNumber({}, { message: i18nValidationMessage('validation.isNumber') })
-    @IsNotEmpty({ message: i18nValidationMessage('validation.isNotEmpty') })
+    @IsNumber({}, { message: i18nValidationMessage('validation.categoryIdNumber') })
+    @IsNotEmpty({ message: i18nValidationMessage('validation.categoryIdRequired') })
     categoryId!: number;
 
     @IsOptional()
-    @IsString({ message: i18nValidationMessage('validation.isString') })
+    @IsString({ message: i18nValidationMessage('validation.fileString') })
     image?: string;
 }

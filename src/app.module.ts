@@ -7,13 +7,12 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UploadsModule } from './uploads/uploads.module';
 import { LoggerMiddleware } from './utils/middlewares/logger.middleware';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
-import { APP_GUARD } from '@nestjs/core';
-import { AcceptLanguageResolver, HeaderResolver, I18nModule, QueryResolver } from 'nestjs-i18n';
+import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
+import { AcceptLanguageResolver, HeaderResolver, I18nJsonLoader, I18nModule, QueryResolver } from 'nestjs-i18n';
 import * as path from 'path';
 import { CommentsModule } from './comments/comments.module';
 import { BlogsModule } from './blogs/blogs.module';
 import { AuthModule } from './auth/auth.module';
-import { dataSourceOptions } from '../db/data-source';
 import { Blog } from './blogs/entities/blog.entity';
 import { User } from './users/entities/user.entity';
 import { Comment } from './comments/entities/comment.entity';
@@ -25,6 +24,8 @@ import { Role } from './roles/entities/role.entity';
 import { Permission } from './permissions/entities/permission.entity';
 import { RolePermission } from './roles/entities/role-permission.entity';
 import { AdminsModule } from './admins/admins.module';
+import { ApiResponseInterceptor } from './utils/interceptors/api-response.interceptor';
+import { ApiExceptionFilter } from './utils/filters/api-exception.filter';
 
 @Module({
   imports: [UsersModule, AdminsModule, AuthModule, BlogsModule,
@@ -37,17 +38,19 @@ import { AdminsModule } from './admins/admins.module';
     I18nModule.forRootAsync({
       useFactory: (configService: ConfigService) => ({
         fallbackLanguage: configService.get('FALLBACK_LANGUAGE', 'en'),
+
+        loader: I18nJsonLoader,
+
         loaderOptions: {
-          path: path.join(process.cwd(), 'src/i18n/'),
-          watch: true,
+          path: path.join(process.cwd(), 'src/i18n'),
         },
       }),
-      resolvers: [
-        { use: QueryResolver, options: ['lang'] },
-        AcceptLanguageResolver,
-        new HeaderResolver(['x-lang']),
-      ],
       inject: [ConfigService],
+      resolvers: [
+        new QueryResolver(['lang']),
+        new HeaderResolver(['x-lang']),
+        AcceptLanguageResolver,
+      ],
     }),
     ThrottlerModule.forRoot({
       throttlers: [
@@ -70,7 +73,7 @@ import { AdminsModule } from './admins/admins.module';
           password: config.get<string>('DB_PASSWORD'),
           database: config.get<string>('DB_DATABASE'),
           entities: [Blog, User, Comment, Category, Role, Permission, RolePermission],
-          synchronize: process.env.NODE_ENV !== 'production',
+          synchronize: false,
         }
       }
     }),
@@ -80,9 +83,17 @@ import { AdminsModule } from './admins/admins.module';
   ],
   controllers: [AppController],
   providers: [AppService, {
-    provide: 'APP_INTERCEPTOR',
+    provide: APP_INTERCEPTOR,
     useClass: ClassSerializerInterceptor,
   },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: ApiResponseInterceptor,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: ApiExceptionFilter,
+    },
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard

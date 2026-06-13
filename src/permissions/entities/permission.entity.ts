@@ -7,7 +7,10 @@ export class Permission {
     id!: number;
 
     @Column()
-    name!: string; // e.g. "Blogs"
+    nameEn!: string; // e.g. "Blogs"
+
+    @Column()
+    nameAr!: string; // e.g. "المقالات"
 
     @Column()
     module!: string; // e.g. "CMS"

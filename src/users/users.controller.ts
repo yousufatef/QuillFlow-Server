@@ -9,6 +9,7 @@ import { UserType } from '../utils/enums';
 import { FileInterceptor } from '@nestjs/platform-express';
 import type { JwtPayloadType } from '../utils/types';
 import type { Response } from 'express';
+import { ResponseMessage } from '../utils/decorators/response-message.decorator';
 
 @Controller('users')
 export class UsersController {
@@ -17,6 +18,7 @@ export class UsersController {
   @Put(':id')
   @Roles(UserType.ADMIN, UserType.NORMAL_USER)
   @UseGuards(AuthRoleGuard)
+  @ResponseMessage('users.updated')
   update(@CurrentUser() payload: JwtPayloadType, @Body() body: UpdateUserDto) {
     return this.usersService.update(payload.id, body);
   }
@@ -24,6 +26,7 @@ export class UsersController {
   @Delete(':id')
   @Roles(UserType.ADMIN, UserType.NORMAL_USER)
   @UseGuards(AuthRoleGuard)
+  @ResponseMessage('users.deleted')
   remove(@CurrentUser() payload: JwtPayloadType) {
     return this.usersService.remove(payload.id);
   }
@@ -31,16 +34,18 @@ export class UsersController {
   @Post('upload-profile-image')
   @UseGuards(AuthGuard)
   @UseInterceptors(FileInterceptor('user-image'))
+  @ResponseMessage('users.profileImageUploaded')
   uploadProfileImage(
     @UploadedFile() file: Express.Multer.File,
     @CurrentUser() payload: JwtPayloadType,
   ) {
-    if (!file) throw new BadRequestException('No file uploaded');
+    if (!file) throw new BadRequestException('uploads.fileRequired');
     return this.usersService.uploadProfileImage(file.filename, payload.id);
   }
 
   @Delete('images/remove-profile-image')
   @UseGuards(AuthGuard)
+  @ResponseMessage('users.profileImageRemoved')
   removeProfileImage(@CurrentUser() payload: JwtPayloadType) {
     return this.usersService.removeProfileImage(payload.id);
   }
@@ -54,6 +59,7 @@ export class UsersController {
   @Get()
   @Roles(UserType.ADMIN)
   @UseGuards(AuthRoleGuard)
+  @ResponseMessage('users.listRetrieved')
   getAllUsers() {
     return this.usersService.getAllUsers();
   }
@@ -61,12 +67,14 @@ export class UsersController {
   @Get(":id")
   @Roles(UserType.ADMIN)
   @UseGuards(AuthRoleGuard)
+  @ResponseMessage('users.retrieved')
   getUserById(@Param('id') id: string) {
     return this.usersService.getUserById(+id);
   }
 
   @Get('current-user')
   @UseGuards(AuthGuard)
+  @ResponseMessage('users.retrieved')
   getCurrentUser(@CurrentUser() payload: JwtPayloadType) {
     return this.usersService.getCurrentUser(payload.id);
   }

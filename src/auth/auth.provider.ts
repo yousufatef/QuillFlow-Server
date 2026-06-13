@@ -57,7 +57,7 @@ export class AuthProvider {
                 userType: UserType.NORMAL_USER
             }
         }); if (existingUser) {
-            throw new BadRequestException('User already exists');
+            throw new BadRequestException('common.users.alreadyExists');
         }
 
         const salt = await bcrypt.genSalt();
@@ -76,30 +76,33 @@ export class AuthProvider {
             where: { email, userType: UserType.NORMAL_USER }
         });
 
-        if (!user) throw new BadRequestException('Invalid credentials');
+        if (!user) throw new BadRequestException('common.users.invalidCredentials');
 
         const isPasswordValid = await bcrypt.compare(password, user.password);
-        if (!isPasswordValid) throw new BadRequestException('Invalid credentials');
+        if (!isPasswordValid) throw new BadRequestException('common.users.invalidCredentials');
 
         return this.generateTokens(user);
     }
 
 
-async loginAdmin(loginDto: LoginDto): Promise<authTokensType> {
-    const { email, password } = loginDto;
+    async loginAdmin(loginDto: LoginDto): Promise<authTokensType> {
+        const { email, password } = loginDto;
 
-    const user = await this.userRepository.findOne({
-        where: { email, userType: In([UserType.ADMIN, UserType.SUPER_ADMIN]) }
-    });
+        const user = await this.userRepository.findOne({
+            where: { email, userType: In([UserType.ADMIN, UserType.SUPER_ADMIN]) }
+        });
 
-    if (!user) throw new BadRequestException('Invalid credentials');
+        if (!user) {
+            throw new BadRequestException('common.users.invalidCredentials');
+        }
 
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-    if (!isPasswordValid) throw new BadRequestException('Invalid credentials');
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (!isPasswordValid) {
+            throw new BadRequestException('common.users.invalidCredentials');
+        }
 
-    return this.generateTokens(user);
-}
-    
+        return this.generateTokens(user);
+    }
     async refreshToken(token: string): Promise<authTokensType> {
         try {
             const payload = await this.jwtService.verifyAsync<JwtPayloadType>(token, {
@@ -108,14 +111,14 @@ async loginAdmin(loginDto: LoginDto): Promise<authTokensType> {
 
             const user = await this.userRepository.findOne({ where: { id: payload.id } });
             if (!user) {
-                throw new UnauthorizedException('User no longer exists');
+                throw new UnauthorizedException('common.auth.userNoLongerExists');
             }
 
             return this.generateTokens(user);
 
         } catch (error) {
             if (error instanceof UnauthorizedException) throw error;
-            throw new UnauthorizedException('Invalid or expired refresh token');
+            throw new UnauthorizedException('common.auth.invalidRefreshToken');
         }
     }
 }

@@ -14,6 +14,7 @@ import { CreateAdminDto } from './dto/create-admin.dto';
 import { UpdateAdminDto } from './dto/update-admin.dto';
 import { PermissionGuard } from '../users/guards/permission.guard';
 import { RequirePermissions } from '../users/decorators/permissions.decorator';
+import { ResponseMessage } from '../utils/decorators/response-message.decorator';
 
 @Controller('admins')
 export class AdminsController {
@@ -23,6 +24,7 @@ export class AdminsController {
   @UseGuards(AuthRoleGuard, PermissionGuard)
   @Roles(UserType.SUPER_ADMIN, UserType.ADMIN)
   @RequirePermissions({ resource: 'Admins', action: 'create' })
+  @ResponseMessage('common.admins.created')
   create(@Body() createAdminDto: CreateAdminDto) {
     return this.adminsService.create(createAdminDto);
   }
@@ -31,14 +33,20 @@ export class AdminsController {
   @UseGuards(AuthRoleGuard, PermissionGuard)
   @Roles(UserType.SUPER_ADMIN, UserType.ADMIN)
   @RequirePermissions({ resource: 'Admins', action: 'update' })
-  update(@CurrentUser() payload: JwtPayloadType, @Body() body: UpdateAdminDto) {
-    return this.adminsService.update(payload.id, body);
+  @ResponseMessage('common.admins.updated')
+  update(
+    @CurrentUser() payload: JwtPayloadType,
+    @Param('id') id: string,
+    @Body() body: UpdateAdminDto,
+  ) {
+    return this.adminsService.update(+id, body);
   }
 
   @Delete(':id')
   @UseGuards(AuthRoleGuard, PermissionGuard)
   @Roles(UserType.SUPER_ADMIN, UserType.ADMIN)
   @RequirePermissions({ resource: 'Admins', action: 'delete' })
+  @ResponseMessage('common.admins.deleted')
   remove(
     @Param('id') id: number,
     @CurrentUser() payload: JwtPayloadType
@@ -49,16 +57,18 @@ export class AdminsController {
   @Post('upload-profile-image')
   @UseGuards(AuthGuard)
   @UseInterceptors(FileInterceptor('user-image'))
+  @ResponseMessage('common.users.profileImageUploaded')
   uploadProfileImage(
     @UploadedFile() file: Express.Multer.File,
     @CurrentUser() payload: JwtPayloadType,
   ) {
-    if (!file) throw new BadRequestException('No file uploaded');
+    if (!file) throw new BadRequestException('common.uploads.fileRequired');
     return this.adminsService.uploadProfileImage(file.filename, payload.id);
   }
 
   @Delete('images/remove-profile-image')
   @UseGuards(AuthGuard)
+  @ResponseMessage('common.users.profileImageRemoved')
   removeProfileImage(@CurrentUser() payload: JwtPayloadType) {
     return this.adminsService.removeProfileImage(payload.id);
   }
@@ -73,6 +83,7 @@ export class AdminsController {
   @UseGuards(AuthRoleGuard, PermissionGuard)
   @Roles(UserType.SUPER_ADMIN, UserType.ADMIN)
   @RequirePermissions({ resource: 'Admins', action: 'read' })
+  @ResponseMessage('common.admins.listRetrieved')
   getAllUsers() {
     return this.adminsService.getAllUsers();
   }
@@ -81,12 +92,14 @@ export class AdminsController {
   @UseGuards(AuthRoleGuard, PermissionGuard)
   @Roles(UserType.SUPER_ADMIN, UserType.ADMIN)
   @RequirePermissions({ resource: 'Admins', action: 'read' })
+  @ResponseMessage('common.admins.retrieved')
   getUserById(@Param('id') id: string) {
     return this.adminsService.getUserById(+id);
   }
 
   @Get('current-user')
   @UseGuards(AuthGuard)
+  @ResponseMessage('common.admins.retrieved')
   getCurrentUser(@CurrentUser() payload: JwtPayloadType) {
     return this.adminsService.getCurrentUser(payload.id);
   }

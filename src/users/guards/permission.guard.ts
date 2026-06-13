@@ -32,20 +32,20 @@ export class PermissionGuard implements CanActivate {
         }
 
         if (user.userType !== UserType.ADMIN) {
-            throw new ForbiddenException('Access denied');
+            throw new ForbiddenException('common.auth.accessDenied');
         }
 
         if (!user.roleId) {
-            throw new ForbiddenException('No role assigned');
+            throw new ForbiddenException('common.common.forbidden');
         }
 
         const role = await this.rolesService.findOneWithPermissions(user.roleId);
         if (!role) {
-            throw new ForbiddenException('Role not found');
+            throw new ForbiddenException('common.roles.notFound');
         }
 
         const hasPermission = requiredPermissions.every(req => {
-            const rp = role.rolePermissions.find(rp => rp.permission.name === req.resource);
+            const rp = role.rolePermissions.find(rp => rp.permission.nameEn === req.resource);
             if (!rp) return false;
 
             switch (req.action) {
@@ -58,7 +58,7 @@ export class PermissionGuard implements CanActivate {
         });
 
         if (!hasPermission) {
-            throw new ForbiddenException('Insufficient permissions');
+            throw new ForbiddenException('common.common.forbidden');
         }
 
         return true;

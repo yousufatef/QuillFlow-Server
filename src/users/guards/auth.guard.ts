@@ -23,10 +23,10 @@ export class AuthGuard implements CanActivate {
                 });
                 request[CURRENT_USER_KEY] = payload;
             } catch (error) {
-                throw new UnauthorizedException("Access denied, invalid token")
+                throw new UnauthorizedException("common.auth.invalidToken")
             }
         } else {
-            throw new UnauthorizedException("Access denied, no token provided")
+            throw new UnauthorizedException("common.auth.noToken")
         }
         return true;
     }

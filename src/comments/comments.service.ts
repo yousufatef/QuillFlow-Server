@@ -39,11 +39,11 @@ export class CommentsService {
     });
 
     if (!comment) {
-      throw new NotFoundException(`Comment with id ${id} not found`);
+      throw new NotFoundException('common.comments.notFound');
     }
 
     if (comment.user.id !== userId) {
-      throw new ForbiddenException('You are not allowed to view this comment');
+      throw new ForbiddenException('common.comments.forbiddenView');
     }
 
     return comment;
@@ -56,11 +56,11 @@ export class CommentsService {
     });
 
     if (!comment) {
-      throw new NotFoundException(`Comment with id ${id} not found`);
+      throw new NotFoundException('common.comments.notFound');
     }
 
     if (comment.user.id !== userId) {
-      throw new ForbiddenException('You are not allowed to update this comment');
+      throw new ForbiddenException('common.comments.forbiddenUpdate');
     }
 
     comment.content = dto.content;
@@ -76,14 +76,14 @@ export class CommentsService {
     });
 
     if (!comment) {
-      throw new NotFoundException(`Comment with id ${id} not found`);
+      throw new NotFoundException('common.comments.notFound');
     }
 
     if (comment.user.id !== userId) {
-      throw new ForbiddenException('You are not allowed to delete this comment');
+      throw new ForbiddenException('common.comments.forbiddenDelete');
     }
 
     await this.commentRepository.remove(comment);
-    return { message: 'Comment deleted successfully' };
+    return null;
   }
 }

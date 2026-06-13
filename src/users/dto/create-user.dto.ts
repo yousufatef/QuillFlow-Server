@@ -1,19 +1,20 @@
 import { IsInt, IsNotEmpty, IsOptional, IsPositive, IsString, Length } from 'class-validator';
+import { i18nValidationMessage } from 'nestjs-i18n';
 
 export class CreateUserDto {
 
-    @IsString()
+    @IsString({ message: i18nValidationMessage('validation.isString') })
     @IsOptional()
-    @Length(2, 150)
+    @Length(2, 150, { message: i18nValidationMessage('validation.usernameLength') })
     username?: string;       
 
-    @IsString()
+    @IsString({ message: i18nValidationMessage('validation.isString') })
     @IsOptional()            
-    @Length(8, 128)
+    @Length(8, 128, { message: i18nValidationMessage('validation.passwordLength') })
     password?: string;        
 
-    @IsInt()
-    @IsPositive()
+    @IsInt({ message: i18nValidationMessage('validation.roleIdInt') })
+    @IsPositive({ message: i18nValidationMessage('validation.roleIdPositive') })
     @IsOptional()
     roleId?: number;
 }

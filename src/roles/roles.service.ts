@@ -18,14 +18,16 @@ export class RolesService {
   ) { }
 
   async create(createRoleDto: CreateRoleDto) {
-    const { name, permissions } = createRoleDto;
+    const { nameEn, nameAr, permissions } = createRoleDto;
 
-    const existingRole = await this.roleRepository.findOne({ where: { name } });
+    const existingRole = await this.roleRepository.findOne({
+      where: [{ nameEn }, { nameAr }],
+    });
     if (existingRole) {
-      throw new ConflictException('This role already exists');
+      throw new ConflictException('common.roles.alreadyExists');
     }
 
-    const role = this.roleRepository.create({ name });
+    const role = this.roleRepository.create({ nameEn, nameAr });
     await this.roleRepository.save(role);
 
     const rolePermissions = permissions.map(p =>
@@ -52,19 +54,25 @@ export class RolesService {
   }
 
   async update(id: number, updateRoleDto: UpdateRoleDto) {
-    const { name, permissions } = updateRoleDto;
+    const { nameEn, nameAr, permissions } = updateRoleDto;
 
     const role = await this.roleRepository.findOne({ where: { id } });
     if (!role) {
-      throw new NotFoundException('Role not found');
+      throw new NotFoundException('common.roles.notFound');
     }
 
-    if (name && name !== role.name) {
-      const existingRole = await this.roleRepository.findOne({ where: { name } });
-      if (existingRole) {
-        throw new ConflictException('This role already exists');
+    if (nameEn || nameAr) {
+      const existingRole = await this.roleRepository.findOne({
+        where: [
+          ...(nameEn ? [{ nameEn }] : []),
+          ...(nameAr ? [{ nameAr }] : []),
+        ],
+      });
+      if (existingRole && existingRole.id !== id) {
+        throw new ConflictException('common.roles.alreadyExists');
       }
-      role.name = name;
+      role.nameEn = nameEn ?? role.nameEn;
+      role.nameAr = nameAr ?? role.nameAr;
       await this.roleRepository.save(role);
     }
 
@@ -99,7 +107,12 @@ export class RolesService {
     const filters: any = {};
 
     if (name) {
-      filters.name = ILike(`%${name}%`);
+      return this.roleRepository.find({
+        where: [
+          { nameEn: ILike(`%${name}%`) },
+          { nameAr: ILike(`%${name}%`) },
+        ],
+      });
     }
 
     if (roleId) {
@@ -112,7 +125,7 @@ export class RolesService {
   async findOne(id: number) {
     const role = await this.roleRepository.findOne({ where: { id } });
     if (!role) {
-      throw new Error(`Role with ID ${id} not found`);
+      throw new NotFoundException('common.roles.notFound');
     }
     return role;
   }
@@ -131,12 +144,12 @@ export class RolesService {
   async remove(id: number) {
     const role = await this.roleRepository.findOne({ where: { id } });
     if (!role) {
-      throw new NotFoundException('Role not found');
+      throw new NotFoundException('common.roles.notFound');
     }
 
     await this.roleRepository.remove(role);
 
-    return { message: 'Role deleted successfully' };
+    return null;
   }
 
 }
