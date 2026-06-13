@@ -9,11 +9,13 @@ import { AuthModule } from '../auth/auth.module';
 import { AdminsService } from './admins.service';
 import { User } from '../users/entities/user.entity';
 import { UsersModule } from '../users/users.module';
+import { RolesModule } from '../roles/roles.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([User]),
     UsersModule,
+    RolesModule,
     AuthModule,
     JwtModule.registerAsync({
       inject: [ConfigService],

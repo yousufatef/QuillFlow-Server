@@ -42,7 +42,7 @@ export class AuthRoleGuard implements CanActivate {
                 if (!user) return false;
 
                 if (roles.includes(user.userType)) {
-                    request[CURRENT_USER_KEY] = payload;
+                    request[CURRENT_USER_KEY] = user;
                     return true;
                 }
 

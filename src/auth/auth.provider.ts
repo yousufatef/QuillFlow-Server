@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { User } from '../users/entities/user.entity';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { RegisterDto } from './dto/register.dto';
 import * as bcrypt from 'bcryptjs';
@@ -84,20 +84,22 @@ export class AuthProvider {
         return this.generateTokens(user);
     }
 
-    async loginAdmin(loginDto: LoginDto): Promise<authTokensType> {
-        const { email, password } = loginDto;
 
-        const user = await this.userRepository.findOne({
-            where: { email, userType: UserType.ADMIN }
-        });
+async loginAdmin(loginDto: LoginDto): Promise<authTokensType> {
+    const { email, password } = loginDto;
 
-        if (!user) throw new BadRequestException('Invalid credentials');
+    const user = await this.userRepository.findOne({
+        where: { email, userType: In([UserType.ADMIN, UserType.SUPER_ADMIN]) }
+    });
 
-        const isPasswordValid = await bcrypt.compare(password, user.password);
-        if (!isPasswordValid) throw new BadRequestException('Invalid credentials');
+    if (!user) throw new BadRequestException('Invalid credentials');
 
-        return this.generateTokens(user);
-    }
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) throw new BadRequestException('Invalid credentials');
+
+    return this.generateTokens(user);
+}
+    
     async refreshToken(token: string): Promise<authTokensType> {
         try {
             const payload = await this.jwtService.verifyAsync<JwtPayloadType>(token, {

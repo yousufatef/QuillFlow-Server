@@ -6,5 +6,5 @@ export class UpdateCategoryDto extends PartialType(CreateCategoryDto) {
     @IsNotEmpty()
     @MinLength(3)
     @MaxLength(50)
-    name: string;
+    name!: string;
 }

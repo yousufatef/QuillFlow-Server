@@ -1,15 +1,9 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { CreateReviewDto } from './create-comment.dto';
-import { IsNotEmpty, IsNumber, IsString, Max, Min, MinLength } from 'class-validator';
+// dto/update-comment.dto.ts
+import { IsNotEmpty, IsString, MinLength } from "class-validator";
 
-export class UpdateReviewDto extends PartialType(CreateReviewDto) {
-    @IsNumber()
-    @IsNotEmpty()
-    @Min(1, { message: 'Rating must be at least 1' })
-    @Max(5, { message: 'Rating must be at most 5' })
-    rating!: number;
-
+export class UpdateCommentDto {
     @IsString()
+    @IsNotEmpty()
     @MinLength(10, { message: 'Comment must be at least 10 characters long' })
-    comment!: string
+    content!: string;
 }

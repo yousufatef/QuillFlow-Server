@@ -12,28 +12,33 @@ import { AuthRoleGuard } from '../users/guards/auth-role.guard';
 import { AuthGuard } from '../users/guards/auth.guard';
 import { CreateAdminDto } from './dto/create-admin.dto';
 import { UpdateAdminDto } from './dto/update-admin.dto';
+import { PermissionGuard } from '../users/guards/permission.guard';
+import { RequirePermissions } from '../users/decorators/permissions.decorator';
 
 @Controller('admins')
 export class AdminsController {
   constructor(private readonly adminsService: AdminsService) { }
 
   @Post()
-  @Roles(UserType.ADMIN)
-  @UseGuards(AuthRoleGuard)
+  @UseGuards(AuthRoleGuard, PermissionGuard)
+  @Roles(UserType.SUPER_ADMIN, UserType.ADMIN)
+  @RequirePermissions({ resource: 'Admins', action: 'create' })
   create(@Body() createAdminDto: CreateAdminDto) {
     return this.adminsService.create(createAdminDto);
   }
 
   @Put(':id')
-  @Roles(UserType.ADMIN)
-  @UseGuards(AuthRoleGuard)
+  @UseGuards(AuthRoleGuard, PermissionGuard)
+  @Roles(UserType.SUPER_ADMIN, UserType.ADMIN)
+  @RequirePermissions({ resource: 'Admins', action: 'update' })
   update(@CurrentUser() payload: JwtPayloadType, @Body() body: UpdateAdminDto) {
     return this.adminsService.update(payload.id, body);
   }
 
   @Delete(':id')
-  @Roles(UserType.ADMIN)
-  @UseGuards(AuthRoleGuard)
+  @UseGuards(AuthRoleGuard, PermissionGuard)
+  @Roles(UserType.SUPER_ADMIN, UserType.ADMIN)
+  @RequirePermissions({ resource: 'Admins', action: 'delete' })
   remove(
     @Param('id') id: number,
     @CurrentUser() payload: JwtPayloadType
@@ -65,15 +70,17 @@ export class AdminsController {
   }
 
   @Get()
-  @Roles(UserType.ADMIN)
-  @UseGuards(AuthRoleGuard)
+  @UseGuards(AuthRoleGuard, PermissionGuard)
+  @Roles(UserType.SUPER_ADMIN, UserType.ADMIN)
+  @RequirePermissions({ resource: 'Admins', action: 'read' })
   getAllUsers() {
     return this.adminsService.getAllUsers();
   }
 
   @Get(":id")
-  @Roles(UserType.ADMIN)
-  @UseGuards(AuthRoleGuard)
+  @UseGuards(AuthRoleGuard, PermissionGuard)
+  @Roles(UserType.SUPER_ADMIN, UserType.ADMIN)
+  @RequirePermissions({ resource: 'Admins', action: 'read' })
   getUserById(@Param('id') id: string) {
     return this.adminsService.getUserById(+id);
   }
