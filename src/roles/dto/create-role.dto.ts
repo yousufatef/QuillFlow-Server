@@ -1,5 +1,5 @@
 // dto/create-role.dto.ts
-import { IsNotEmpty, Length, IsArray, ValidateNested, ArrayMinSize, IsString } from "class-validator";
+import { IsNotEmpty, Length, IsArray, ValidateNested, IsString, IsOptional } from "class-validator";
 import { Type } from "class-transformer";
 import { PermissionAuthoritiesDto } from "./permission-authorities.dto";
 import { i18nValidationMessage } from "nestjs-i18n";
@@ -15,9 +15,9 @@ export class CreateRoleDto {
     @Length(2, 100, { message: i18nValidationMessage('validation.nameArLength') })
     nameAr!: string;
 
+    @IsOptional()
     @IsArray({ message: i18nValidationMessage('validation.isArray') })
-    @ArrayMinSize(1, { message: i18nValidationMessage('validation.permissionsRequired') })
     @ValidateNested({ each: true })
     @Type(() => PermissionAuthoritiesDto)
-    permissions!: PermissionAuthoritiesDto[];
+    permissions?: PermissionAuthoritiesDto[];
 }

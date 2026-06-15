@@ -6,34 +6,34 @@ import { ResponseMessage } from '../utils/decorators/response-message.decorator'
 
 @Controller('permissions')
 export class PermissionsController {
-  constructor(private readonly permissionsService: PermissionsService) {}
+  constructor(private readonly permissionsService: PermissionsService) { }
 
   @Post()
-  @ResponseMessage('permissions.created')
+  @ResponseMessage('common.permissions.created')
   create(@Body() createPermissionDto: CreatePermissionDto) {
     return this.permissionsService.create(createPermissionDto);
   }
 
   @Get()
-  @ResponseMessage('permissions.listRetrieved')
+  @ResponseMessage('common.permissions.listRetrieved')
   findAll(@Query('name') name?: string, @Query('module') module?: string) {
     return this.permissionsService.findAll(name, module);
   }
 
   @Get(':id')
-  @ResponseMessage('permissions.retrieved')
+  @ResponseMessage('common.permissions.retrieved')
   findOne(@Param('id') id: string) {
     return this.permissionsService.findOne(+id);
   }
 
   @Patch(':id')
-  @ResponseMessage('permissions.updated')
+  @ResponseMessage('common.permissions.updated')
   update(@Param('id') id: string, @Body() updatePermissionDto: UpdatePermissionDto) {
     return this.permissionsService.update(+id, updatePermissionDto);
   }
 
   @Delete(':id')
-  @ResponseMessage('permissions.deleted')
+  @ResponseMessage('common.permissions.deleted')
   remove(@Param('id') id: string) {
     return this.permissionsService.remove(+id);
   }

@@ -18,7 +18,7 @@ export class UsersController {
   @Put(':id')
   @Roles(UserType.ADMIN, UserType.NORMAL_USER)
   @UseGuards(AuthRoleGuard)
-  @ResponseMessage('users.updated')
+  @ResponseMessage('common.users.updated')
   update(@CurrentUser() payload: JwtPayloadType, @Body() body: UpdateUserDto) {
     return this.usersService.update(payload.id, body);
   }
@@ -26,7 +26,7 @@ export class UsersController {
   @Delete(':id')
   @Roles(UserType.ADMIN, UserType.NORMAL_USER)
   @UseGuards(AuthRoleGuard)
-  @ResponseMessage('users.deleted')
+  @ResponseMessage('common.users.deleted')
   remove(@CurrentUser() payload: JwtPayloadType) {
     return this.usersService.remove(payload.id);
   }
@@ -59,7 +59,7 @@ export class UsersController {
   @Get()
   @Roles(UserType.ADMIN)
   @UseGuards(AuthRoleGuard)
-  @ResponseMessage('users.listRetrieved')
+  @ResponseMessage('common.users.listRetrieved')
   getAllUsers() {
     return this.usersService.getAllUsers();
   }
@@ -67,14 +67,14 @@ export class UsersController {
   @Get(":id")
   @Roles(UserType.ADMIN)
   @UseGuards(AuthRoleGuard)
-  @ResponseMessage('users.retrieved')
+  @ResponseMessage('common.users.retrieved')
   getUserById(@Param('id') id: string) {
     return this.usersService.getUserById(+id);
   }
 
   @Get('current-user')
   @UseGuards(AuthGuard)
-  @ResponseMessage('users.retrieved')
+  @ResponseMessage('common.users.retrieved')
   getCurrentUser(@CurrentUser() payload: JwtPayloadType) {
     return this.usersService.getCurrentUser(payload.id);
   }

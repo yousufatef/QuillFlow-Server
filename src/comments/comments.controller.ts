@@ -15,7 +15,7 @@ export class CommentsController {
 
   @Post(':blogId')
   @UseGuards(AuthGuard)
-  @ResponseMessage('comments.created')
+  @ResponseMessage('common.comments.created')
   createNewComment(
     @Param('blogId', ParseIntPipe) blogId: number,
     @Body() createCommentDto: CreateCommentDto,
@@ -26,14 +26,14 @@ export class CommentsController {
 
   @Get(':id')
   @UseGuards(AuthGuard)
-  @ResponseMessage('comments.retrieved')
+  @ResponseMessage('common.comments.retrieved')
   getCommentById(@Param('id', ParseIntPipe) id: number, @CurrentUser() payload: JwtPayloadType) {
     return this.commentsService.getCommentById(id, payload.id);
   }
 
   @Put(':id')
   @UseGuards(AuthGuard)
-  @ResponseMessage('comments.updated')
+  @ResponseMessage('common.comments.updated')
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateCommentDto: UpdateCommentDto,
@@ -44,7 +44,7 @@ export class CommentsController {
 
   @Delete(':id')
   @UseGuards(AuthGuard)
-  @ResponseMessage('comments.deleted')
+  @ResponseMessage('common.comments.deleted')
   remove(@Param('id', ParseIntPipe) id: number, @CurrentUser() payload: JwtPayloadType) {
     return this.commentsService.remove(id, payload.id);
   }

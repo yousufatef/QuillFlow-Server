@@ -23,7 +23,7 @@ export class ProductsController {
   @Roles(UserType.ADMIN, UserType.SUPER_ADMIN)
   @RequirePermissions({ resource: 'Blogs', action: 'create' })
   @UseInterceptors(FileInterceptor('coverImage'))
-  @ResponseMessage('blogs.created')
+  @ResponseMessage('common.blogs.created')
   create(
     @Body() createBlogDto: CreateBlogDto,
     @CurrentUser() payload: JwtPayloadType,
@@ -37,7 +37,7 @@ export class ProductsController {
   @UseGuards(AuthRoleGuard, PermissionGuard)
   @Roles(UserType.SUPER_ADMIN, UserType.ADMIN)
   @RequirePermissions({ resource: 'Blogs', action: 'read' })
-  @ResponseMessage('blogs.listRetrieved')
+  @ResponseMessage('common.blogs.listRetrieved')
   async getAllBlogs(
     @Query("name") name: string,
     @Query("categoryId", new ParseIntPipe({ optional: true })) categoryId?: number,
@@ -51,7 +51,7 @@ export class ProductsController {
   @UseGuards(AuthRoleGuard, PermissionGuard)
   @Roles(UserType.SUPER_ADMIN, UserType.ADMIN)
   @RequirePermissions({ resource: 'Blogs', action: 'read' })
-  @ResponseMessage('blogs.retrieved')
+  @ResponseMessage('common.blogs.retrieved')
   getProductById(@Param('id', ParseIntPipe) id: number) {
     return this.blogsService.getBlogById(id);
   }
@@ -60,7 +60,7 @@ export class ProductsController {
   @UseGuards(AuthRoleGuard, PermissionGuard)
   @Roles(UserType.SUPER_ADMIN, UserType.ADMIN)
   @RequirePermissions({ resource: 'Blogs', action: 'update' })
-  @ResponseMessage('blogs.updated')
+  @ResponseMessage('common.blogs.updated')
   update(@Param('id', ParseIntPipe) id: number, @Body() updateBlogDto: UpdateBlogDto) {
     return this.blogsService.update(id, updateBlogDto);
   }
@@ -69,7 +69,7 @@ export class ProductsController {
   @UseGuards(AuthRoleGuard, PermissionGuard)
   @Roles(UserType.SUPER_ADMIN, UserType.ADMIN)
   @RequirePermissions({ resource: 'Blogs', action: 'delete' })
-  @ResponseMessage('blogs.deleted')
+  @ResponseMessage('common.blogs.deleted')
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.blogsService.remove(id);
   }

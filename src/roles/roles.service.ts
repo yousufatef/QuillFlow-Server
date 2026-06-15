@@ -30,18 +30,20 @@ export class RolesService {
     const role = this.roleRepository.create({ nameEn, nameAr });
     await this.roleRepository.save(role);
 
-    const rolePermissions = permissions.map(p =>
-      this.rolePermissionRepository.create({
-        roleId: role.id,
-        permissionId: p.permissionId,
-        canCreate: p.canCreate ?? false,
-        canRead: p.canRead ?? false,
-        canUpdate: p.canUpdate ?? false,
-        canDelete: p.canDelete ?? false,
-      })
-    );
+    if (permissions && permissions.length > 0) {
+      const rolePermissions = permissions.map(p =>
+        this.rolePermissionRepository.create({
+          roleId: role.id,
+          permissionId: p.permissionId,
+          canCreate: p.canCreate ?? false,
+          canRead: p.canRead ?? false,
+          canUpdate: p.canUpdate ?? false,
+          canDelete: p.canDelete ?? false,
+        })
+      );
 
-    await this.rolePermissionRepository.save(rolePermissions);
+      await this.rolePermissionRepository.save(rolePermissions);
+    }
 
     return this.roleRepository.findOne({
       where: { id: role.id },
