@@ -64,18 +64,18 @@ export class UsersController {
     return this.usersService.getAllUsers();
   }
 
+  @Get('profile')
+  @UseGuards(AuthGuard)
+  @ResponseMessage('common.users.retrieved')
+  getCurrentUser(@CurrentUser() payload: JwtPayloadType) {
+    return this.usersService.getCurrentUser(payload.id);
+  }
+
   @Get(":id")
   @Roles(UserType.ADMIN)
   @UseGuards(AuthRoleGuard)
   @ResponseMessage('common.users.retrieved')
   getUserById(@Param('id') id: string) {
     return this.usersService.getUserById(+id);
-  }
-
-  @Get('current-user')
-  @UseGuards(AuthGuard)
-  @ResponseMessage('common.users.retrieved')
-  getCurrentUser(@CurrentUser() payload: JwtPayloadType) {
-    return this.usersService.getCurrentUser(payload.id);
   }
 }

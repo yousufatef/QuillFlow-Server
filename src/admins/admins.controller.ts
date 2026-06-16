@@ -88,6 +88,13 @@ export class AdminsController {
     return this.adminsService.getAllUsers();
   }
 
+  @Get('current-user')
+  @UseGuards(AuthGuard)
+  @ResponseMessage('common.admins.retrieved')
+  getCurrentUser(@CurrentUser() payload: JwtPayloadType) {
+    return this.adminsService.getCurrentUser(payload.id);
+  }
+
   @Get(":id")
   @UseGuards(AuthRoleGuard, PermissionGuard)
   @Roles(UserType.SUPER_ADMIN, UserType.ADMIN)
@@ -95,12 +102,5 @@ export class AdminsController {
   @ResponseMessage('common.admins.retrieved')
   getUserById(@Param('id') id: string) {
     return this.adminsService.getUserById(+id);
-  }
-
-  @Get('current-user')
-  @UseGuards(AuthGuard)
-  @ResponseMessage('common.admins.retrieved')
-  getCurrentUser(@CurrentUser() payload: JwtPayloadType) {
-    return this.adminsService.getCurrentUser(payload.id);
   }
 }

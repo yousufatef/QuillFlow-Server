@@ -93,14 +93,17 @@ export class UsersService {
   }
 
   async getCurrentUser(id: number): Promise<UserProfile> {
+    try {
+      const user = await this.userRepository.findOne({ where: { id: id } });
+      console.log("🚀 ~ UsersService ~ getCurrentUser ~ user:", user)
 
-
-    const user = await this.userRepository.findOne({ where: { id } });
-    if (!user) {
-      throw new BadRequestException('common.users.notFound');
+      if (!user) {
+        throw new BadRequestException('common.users.notFound');
+      }
+      return user;
+    } catch (error) {
+      throw error;
     }
-    return user;
-
   }
 
   getAllUsers(): Promise<User[]> {

@@ -40,15 +40,6 @@ export class RolesController {
     return this.rolesService.findAll(name);
   }
 
-  @Get(':id')
-  @UseGuards(AuthRoleGuard, PermissionGuard)
-  @Roles(UserType.SUPER_ADMIN, UserType.ADMIN)
-  @RequirePermissions({ resource: 'Roles', action: 'read' })
-  @ResponseMessage('common.roles.retrieved')
-  findOne(@Param('id') id: string) {
-    return this.rolesService.findOne(+id);
-  }
-
   @Get('with-permissions/:id')
   @UseGuards(AuthRoleGuard, PermissionGuard)
   @Roles(UserType.SUPER_ADMIN, UserType.ADMIN)
@@ -56,6 +47,15 @@ export class RolesController {
   @ResponseMessage('common.roles.retrieved')
   findOneWithPermissions(@Param('id') id: string) {
     return this.rolesService.findOneWithPermissions(+id);
+  }
+
+  @Get(':id')
+  @UseGuards(AuthRoleGuard, PermissionGuard)
+  @Roles(UserType.SUPER_ADMIN, UserType.ADMIN)
+  @RequirePermissions({ resource: 'Roles', action: 'read' })
+  @ResponseMessage('common.roles.retrieved')
+  findOne(@Param('id') id: string) {
+    return this.rolesService.findOne(+id);
   }
 
   @Delete('delete/:id')
