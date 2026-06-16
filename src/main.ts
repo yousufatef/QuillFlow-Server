@@ -15,7 +15,11 @@ async function bootstrap() {
   app.use(helmet());
 
   app.enableCors({
-    origin: ["http://localhost:3000", "http://localhost:5173"],
+    origin: [
+      'http://localhost:3000',
+      'http://localhost:5173',
+      'https://quill-flow-dashboard.vercel.app',
+    ],
   });
 
   await app.listen(process.env.PORT ?? 3000);
