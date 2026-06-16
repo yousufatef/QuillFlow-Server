@@ -12,15 +12,22 @@ async function bootstrap() {
     transform: true,
   }));
 
-  app.use(helmet());
-
+  // ✅ CORS must be enabled BEFORE helmet
   app.enableCors({
     origin: [
       'http://localhost:3000',
       'http://localhost:5173',
       'https://quill-flow-dashboard.vercel.app',
     ],
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
+    credentials: true,
   });
+
+  // ✅ helmet AFTER cors
+  app.use(helmet({
+    crossOriginResourcePolicy: { policy: 'cross-origin' }, // ← critical
+  }));
 
   await app.listen(process.env.PORT ?? 3000);
 }
