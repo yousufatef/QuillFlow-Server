@@ -12,7 +12,6 @@ async function bootstrap() {
     transform: true,
   }));
 
-  // ✅ CORS must be enabled BEFORE helmet
   app.enableCors({
     origin: [
       'http://localhost:3000',
@@ -20,7 +19,6 @@ async function bootstrap() {
       'https://quill-flow-dashboard.vercel.app',
     ],
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
     credentials: true,
   });
 
