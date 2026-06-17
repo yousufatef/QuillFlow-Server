@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { ProductsController } from './blogs.controller';
+import { BlogsController } from './blogs.controller';
 import { Blog } from './entities/blog.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from '../users/users.module';
@@ -9,7 +9,7 @@ import { RolesModule } from '../roles/roles.module';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Blog]), UsersModule, JwtModule, RolesModule],
-  controllers: [ProductsController],
+  controllers: [BlogsController],
   providers: [BlogsService],
   exports: [BlogsService],
 })

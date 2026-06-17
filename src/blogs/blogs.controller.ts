@@ -15,13 +15,12 @@ import { PermissionGuard } from '../users/guards/permission.guard';
 import { ResponseMessage } from '../utils/decorators/response-message.decorator';
 
 @Controller('blogs')
-export class ProductsController {
+export class BlogsController {
   constructor(private readonly blogsService: BlogsService) { }
 
   @Post("create-blog")
-  @UseGuards(AuthRoleGuard, PermissionGuard)
+  @UseGuards(AuthRoleGuard)
   @Roles(UserType.ADMIN, UserType.SUPER_ADMIN)
-  @RequirePermissions({ resource: 'Blogs', action: 'create' })
   @UseInterceptors(FileInterceptor('coverImage'))
   @ResponseMessage('common.blogs.created')
   create(
