@@ -21,7 +21,7 @@ export class AuthProvider {
         const payload: JwtPayloadType = { id: user.id, userType: user.userType };
         return await this.jwtService.signAsync(payload, {
             secret: process.env.JWT_ACCESS_SECRET,
-            expiresIn: '1m',
+            expiresIn: '15m',
         });
     }
 
