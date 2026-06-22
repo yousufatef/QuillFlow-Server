@@ -15,12 +15,12 @@ import { ResponseMessage } from '../utils/decorators/response-message.decorator'
 export class UsersController {
   constructor(private readonly usersService: UsersService) { }
 
-  @Put(':id')
-  @Roles(UserType.ADMIN, UserType.NORMAL_USER)
-  @UseGuards(AuthRoleGuard)
-  @ResponseMessage('common.users.updated')
-  update(@CurrentUser() payload: JwtPayloadType, @Body() body: UpdateUserDto) {
-    return this.usersService.update(payload.id, body);
+  // ✅ Static DELETE routes before dynamic :id
+  @Delete('images/remove-profile-image')
+  @UseGuards(AuthGuard)
+  @ResponseMessage('users.profileImageRemoved')
+  removeProfileImage(@CurrentUser() payload: JwtPayloadType) {
+    return this.usersService.removeProfileImage(payload.id);
   }
 
   @Delete(':id')
@@ -31,23 +31,12 @@ export class UsersController {
     return this.usersService.remove(payload.id);
   }
 
-  @Post('upload-profile-image')
+  // ✅ Static GET routes before dynamic :id
+  @Get('profile')
   @UseGuards(AuthGuard)
-  @UseInterceptors(FileInterceptor('user-image'))
-  @ResponseMessage('users.profileImageUploaded')
-  uploadProfileImage(
-    @UploadedFile() file: Express.Multer.File,
-    @CurrentUser() payload: JwtPayloadType,
-  ) {
-    if (!file) throw new BadRequestException('uploads.fileRequired');
-    return this.usersService.uploadProfileImage(file.filename, payload.id);
-  }
-
-  @Delete('images/remove-profile-image')
-  @UseGuards(AuthGuard)
-  @ResponseMessage('users.profileImageRemoved')
-  removeProfileImage(@CurrentUser() payload: JwtPayloadType) {
-    return this.usersService.removeProfileImage(payload.id);
+  @ResponseMessage('common.users.retrieved')
+  getCurrentUser(@CurrentUser() payload: JwtPayloadType) {
+    return this.usersService.getCurrentUser(payload.id);
   }
 
   @Get('images/:image')
@@ -64,18 +53,32 @@ export class UsersController {
     return this.usersService.getAllUsers();
   }
 
-  @Get('profile')
-  @UseGuards(AuthGuard)
-  @ResponseMessage('common.users.retrieved')
-  getCurrentUser(@CurrentUser() payload: JwtPayloadType) {
-    return this.usersService.getCurrentUser(payload.id);
-  }
-
-  @Get(":id")
+  @Get(':id')
   @Roles(UserType.ADMIN)
   @UseGuards(AuthRoleGuard)
   @ResponseMessage('common.users.retrieved')
   getUserById(@Param('id') id: string) {
     return this.usersService.getUserById(+id);
+  }
+
+  // PUT/POST have no static/dynamic conflict so order doesn't matter here
+  @Put(':id')
+  @Roles(UserType.ADMIN, UserType.NORMAL_USER)
+  @UseGuards(AuthRoleGuard)
+  @ResponseMessage('common.users.updated')
+  update(@CurrentUser() payload: JwtPayloadType, @Body() body: UpdateUserDto) {
+    return this.usersService.update(payload.id, body);
+  }
+
+  @Post('upload-profile-image')
+  @UseGuards(AuthGuard)
+  @UseInterceptors(FileInterceptor('user-image'))
+  @ResponseMessage('users.profileImageUploaded')
+  uploadProfileImage(
+    @UploadedFile() file: Express.Multer.File,
+    @CurrentUser() payload: JwtPayloadType,
+  ) {
+    if (!file) throw new BadRequestException('uploads.fileRequired');
+    return this.usersService.uploadProfileImage(file.filename, payload.id);
   }
 }
